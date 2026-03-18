@@ -131,7 +131,7 @@ DECLARE @IdRegistroListarTodos VARCHAR(32);
 IF NOT EXISTS (
     SELECT TOP 1 1
     FROM [Menu]
-    WHERE [nombre] = 'Entities' 
+    WHERE [nombre] = 'Entidades' 
     AND [url] = '/Catalogos/Entities/ListarTodos'
 )
 BEGIN

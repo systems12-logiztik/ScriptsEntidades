@@ -4,7 +4,7 @@ VERSION		MODIFIEDBY		MODIFIEDDATE	HU			MODIFICATION
 1			Jorge Ortiz		2025-11-10		CT 55390	Initial Code - New SP to generate unique integer IDs
 2			Jorge Ortiz		2025-11-13		CT 55390	Modified to generate bulk IDs and return table
 */
-CREATE OR ALTER PROCEDURE [dbo].[pro_General_GenerateBulkInt]
+CREATE OR ALTER PROCEDURE [dbo].[AC_pro_General_GenerateBulkInt]
 (
     @table VARCHAR(32),
 	@idEmpresa VARCHAR(32),
@@ -55,7 +55,7 @@ BEGIN
 END;
 /*
 -- Ejemplo de uso: Generar 5 IDs
-EXEC pro_General_GenerateBulkInt 
+EXEC AC_pro_General_GenerateBulkInt 
     @table = 'ExcludedContacts',
     @idEmpresa = 'EMP011',
     @cantidad = 5;
@@ -64,7 +64,7 @@ EXEC pro_General_GenerateBulkInt
 DECLARE @NuevosIDs TABLE (id INT, unificado INT);
 
 INSERT INTO @NuevosIDs (id, unificado)
-EXEC pro_General_GenerateBulkInt 
+EXEC AC_pro_General_GenerateBulkInt 
     @table = 'ExcludedContacts',
     @idEmpresa = 'EMP011',
     @cantidad = 10;

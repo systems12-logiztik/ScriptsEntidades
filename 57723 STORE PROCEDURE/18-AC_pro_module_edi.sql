@@ -2,7 +2,7 @@
 VERSION     MODIFIEDBY			MODIFIEDDATE		HU				MODIFICATION
 1		    Jesús Yandún	    2026-02-13	        57732		    INITIAL CODE: based on pro_modulo_edi
 */
-CREATE OR ALTER PROCEDURE [dbo].[AC_pro_module_edi]
+CREATE OR ALTER PROCEDURE [dbo].[AC_pro_Module_Edi]
     @fechaDesde DATETIME,
     @fechaHasta DATETIME,
     @carrier VARCHAR(16) = NULL,
@@ -293,3 +293,23 @@ BEGIN
 			  AND CA.codigo = 'EstadosGuiasWareHose'
     END;
 END;
+
+/*
+exec sp_executesql N'AC_pro_Module_Edi @fechaDesde, @fechaHasta, @carrier, @NroDocumento, @consulta, @Billto
+',N'@fechaDesde datetime,@fechaHasta datetime,@carrier varchar(16),@NroDocumento varchar(16),@consulta int,@Billto varchar(128)',
+@fechaDesde='19-02-2026 00:00:00',
+@fechaHasta='26-02-2026 00:00:00',
+@carrier=NULL,
+@NroDocumento=NULL,
+@consulta=8,
+@Billto='GARDENS AMERICA INC GROUP';
+
+exec sp_executesql N'AC_pro_Module_Edi @fechaDesde, @fechaHasta, @carrier, @NroDocumento, @consulta, @Billto  ',N'
+@fechaDesde datetime,@fechaHasta datetime,@carrier varchar(16),@NroDocumento varchar(32),@consulta int,@Billto varchar(128)',
+@fechaDesde='01-12-2025 00:00:00',
+@fechaHasta='06-01-2026 00:00:00',
+@carrier=NULL,
+@NroDocumento=NULL,
+@consulta=3,
+@Billto=NULL;
+*/

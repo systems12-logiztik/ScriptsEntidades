@@ -1,6 +1,6 @@
 /*
 VERSION		MODIFIEDBY			MODIFIEDDATE	HU					MODIFICATION
-1			Jorge Ortiz			22-04-2025		CT 46760			Initial Code - Add new Menus for Billto-ParametersDocs
+1			Jorge Ortiz			2025-04-22		CT 46760			Initial Code - Add new Menus for Billto-ParametersDocs
 */
 DECLARE @IdRegistro VARCHAR(16),
 		@newId VARCHAR(32)

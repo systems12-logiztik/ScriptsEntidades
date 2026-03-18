@@ -1,6 +1,6 @@
 /*    
 VERSION		MODIFIEDBY			MODIFIEDDATE		HU				MODIFICATION
-1			Jesús Yandún		2026-02-13			57729			Initial code: Based on pro_ListarPiezasInventarios
+1			Jesï¿½s Yandï¿½n		2026-02-13			57729			Initial code: Based on pro_ListarPiezasInventarios
 */
 CREATE OR ALTER PROCEDURE dbo.AC_pro_ListPiecesInventory
 (
@@ -193,3 +193,11 @@ BEGIN
 			)
 		END;
 END;
+
+/*
+
+execute dbo.AC_pro_ListPiecesInventory 0, '12/10/2025 00:00:00', 'Nombre', 'EMP014',NULL
+execute dbo.AC_pro_ListPiecesInventory 1, '12/10/2025 00:00:00', 'Nombre', 'EMP014',NULL
+execute dbo.AC_pro_ListPiecesInventory 0, '12/10/2025 00:00:00', 'Nombre', 'EMP015',NULL
+execute dbo.AC_pro_ListPiecesInventory 1, '12/10/2025 00:00:00', 'Nombre', 'EMP015',NULL
+*/

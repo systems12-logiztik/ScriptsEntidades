@@ -2,7 +2,7 @@
 VERSION     MODIFIEDBY              MODIFIEDDATE    HU          MODIFICATION
 1			Mateo Velasco			2025-06-19      AC-51314    Initial Code: Insert Menu and permissions
 */
--- Agregar opci�n de EDITAR para `Consignatarios`
+-- Agregar opcion de EDITAR para `Consignatarios`
 DECLARE @IdRegistro VARCHAR(32);
 DECLARE @IdRegistroEditar VARCHAR(32);
  

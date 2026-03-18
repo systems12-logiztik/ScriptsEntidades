@@ -38,3 +38,19 @@ BEGIN
 		AND TRP.envioXML = 1
 		AND bode.id = @bodega
 END
+
+/*
+exec sp_executesql N'AC_pro_ModuleEdiDetail @carrier, @bodega, @fechaDespacho, @NroDocumento
+',N'@carrier nvarchar(16),@bodega nvarchar(16),@fechaDespacho datetime,@NroDocumento nvarchar(32)',
+@carrier=N'qZcHaiGVfPJk',
+@bodega=N'LXgyot5M',
+@fechaDespacho='12-01-2026',
+@NroDocumento=N'36997465620';
+
+exec sp_executesql N'AC_pro_ModuleEdiDetail @carrier, @bodega, @fechaDespacho, @NroDocumento
+',N'@carrier nvarchar(16),@bodega nvarchar(16),@fechaDespacho datetime,@NroDocumento nvarchar(32)',
+@carrier=N'qZcHaiGVfPJk',
+@bodega=N'QK6s23du',
+@fechaDespacho='24-02-2026',
+@NroDocumento=N'99201679451';
+*/

@@ -1,7 +1,7 @@
 /*
 VERSION    MODIFIEDBY        MODIFIEDDATE    HU      MODIFICATION
-1          JOSE GUERRA       28-01-2025      44729   LAG-CT-003 Bill-to Catalog: General Tab and Hide/Delete Buttons
-2          JOSE GUERRA       23-04-2025      46759   LAG-CT-004 Bill-to Catalog: Users Tab
+1          JOSE GUERRA       2025-01-28      44729   LAG-CT-003 Bill-to Catalog: General Tab and Hide/Delete Buttons
+2          JOSE GUERRA       2025-04-23      46759   LAG-CT-004 Bill-to Catalog: Users Tab
 */
 DECLARE @IdNew INT;
 

@@ -139,3 +139,14 @@ BEGIN
     RETURN;
 END
 GO
+
+/*
+-- Buscar BillTo por nombre
+SELECT * FROM dbo.f_SearchEntities('FLOR', 'BillTo')
+ 
+-- Buscar Consignee por alias o nombre
+SELECT * FROM dbo.f_SearchEntities('allu', 'Consignee')
+ 
+-- Buscar ShipTo solo por nombre (no por alias)
+SELECT * FROM dbo.f_SearchEntities('allu', 'ShipTo')
+*/
