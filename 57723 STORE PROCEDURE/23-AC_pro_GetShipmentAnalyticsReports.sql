@@ -1,6 +1,6 @@
 ﻿/*
 VERSION     MODIFIEDBY			MODIFIEDDATE    HU      MODIFICATION
-1           Ian Carlos Ortega	2026-02-11      57745   Based on dbo.pro_ReportesAnaliticaEmbarques
+1           Ian Ortega			2026-02-11      57745   Based on dbo.pro_ReportesAnaliticaEmbarques
 */
 
 CREATE OR ALTER PROCEDURE [dbo].[AC_pro_GetShipmentAnalyticsReports]
@@ -11,14 +11,12 @@ CREATE OR ALTER PROCEDURE [dbo].[AC_pro_GetShipmentAnalyticsReports]
 )
 AS
 BEGIN
-	-- Tabla de Consignatarios Seleccionados
-	DECLARE @ConsigneesSelected TABLE(
+	CREATE TABLE #ConsigneesSelected (
 		id VARCHAR(16) PRIMARY KEY,
 		nombre NVARCHAR(512)
 	)
 
-	-- Tabla de resultados preliminares
-	DECLARE @Preliminar TABLE(
+	CREATE TABLE #Preliminar (
 		origin VARCHAR(16),
 		destination VARCHAR(16),
 		[date] DATE,
@@ -52,8 +50,7 @@ BEGIN
 		idDetalleIngreso VARCHAR(16)
 	)
 
-	-- Tabla de resultados finales
-	DECLARE @Final TABLE(
+	CREATE TABLE #Final (
 		origin VARCHAR(16),
 		destination VARCHAR(16),
 		[date] DATE,
@@ -82,21 +79,15 @@ BEGIN
 		idGuiaHouse VARCHAR(128)
 	)
 
-	-- Separar la lista de clientes en una tabla
-	INSERT INTO @ConsigneesSelected (id)
+	INSERT INTO #ConsigneesSelected (id)
 	SELECT TRIM(VALUE) FROM STRING_SPLIT(@IdsConsignees, ',')
 
-	-- Obtener los nombres de los consignatarios enviados
-	UPDATE @ConsigneesSelected
+	UPDATE #ConsigneesSelected
 	SET nombre = VCE.nombre
-	FROM @ConsigneesSelected CS
-		INNER JOIN v_ClientsEntities VCE ON VCE.ConsigneeId = CS.id
+	FROM #ConsigneesSelected CS
+	INNER JOIN v_ClientsEntities VCE WITH (NOLOCK) ON VCE.ConsigneeId = CS.id
 
-	-- Se agrega un día a la fecha hasta ya que es inclusiva
-	SET @EndDate = DATEADD(DAY, 1, @EndDate)
-
-	-- Información preliminar para el reporte (con Guia asociada)
-	INSERT INTO @Preliminar 
+	INSERT INTO #Preliminar 
 	SELECT
 		origin = CO.codigoIATA,
 		destination = CD.codigoIATA,
@@ -129,25 +120,23 @@ BEGIN
 		idGuiaHouseDetalle = HD.id,
 		idCodigoDeBarra = HD.idCodigoDeBarra,
 		CB.idDetalleIngreso
-	FROM @ConsigneesSelected CS
-		INNER JOIN GuiasHouse HE ON HE.ConsigneeId = CS.id
-		INNER JOIN GuiasHouseDetalles HD ON HD.idGuiaHouse = HE.id
-		INNER JOIN DetalleMercancias DM ON DM.id = HD.idDetalleMercancia
-		INNER JOIN Exportadores EX ON EX.id = HE.idExportador
-		INNER JOIN Ciudades CO ON CO.id = HE.idCiudadPuertoOrigen
-		INNER JOIN Ciudades CD ON CD.id = HE.idCiudadPuertoDestino
-		INNER JOIN TiposDePieza TP ON TP.id = HD.idTipoDePieza
-		INNER JOIN Guias GU ON GU.id = HE.idGuia
-		LEFT JOIN Transportes TR ON TR.id = HE.idTransporteOrigen
-		LEFT JOIN CodigosDeBarra CB ON CB.id = HD.idCodigoDeBarra
-		LEFT JOIN DetalleIngresos DI ON DI.id = CB.idDetalleIngreso
-		LEFT JOIN EncabezadoIngresos EI ON EI.id = DI.idEncabezadoIngreso
-		LEFT JOIN Empresas EM ON EM.id = DI.idEmpresa
-	WHERE GU.fechaEmbarque >= @StartDate
-		AND GU.fechaEmbarque < @EndDate
+	FROM #ConsigneesSelected CS
+	INNER JOIN GuiasHouse HE WITH (NOLOCK) ON HE.ConsigneeId = CS.id
+	INNER JOIN GuiasHouseDetalles HD WITH (NOLOCK) ON HD.idGuiaHouse = HE.id
+	INNER JOIN DetalleMercancias DM WITH (NOLOCK) ON DM.id = HD.idDetalleMercancia
+	INNER JOIN Exportadores EX WITH (NOLOCK) ON EX.id = HE.idExportador
+	INNER JOIN Ciudades CO WITH (NOLOCK) ON CO.id = HE.idCiudadPuertoOrigen
+	INNER JOIN Ciudades CD WITH (NOLOCK) ON CD.id = HE.idCiudadPuertoDestino
+	INNER JOIN TiposDePieza TP WITH (NOLOCK) ON TP.id = HD.idTipoDePieza
+	INNER JOIN Guias GU WITH (NOLOCK) ON GU.id = HE.idGuia
+	LEFT JOIN Transportes TR WITH (NOLOCK) ON TR.id = HE.idTransporteOrigen
+	LEFT JOIN CodigosDeBarra CB WITH (NOLOCK) ON CB.id = HD.idCodigoDeBarra
+	LEFT JOIN DetalleIngresos DI WITH (NOLOCK) ON DI.id = CB.idDetalleIngreso
+	LEFT JOIN EncabezadoIngresos EI WITH (NOLOCK) ON EI.id = DI.idEncabezadoIngreso
+	LEFT JOIN Empresas EM WITH (NOLOCK) ON EM.id = DI.idEmpresa
+	WHERE GU.fechaEmbarque BETWEEN @StartDate AND @EndDate
 
-	-- Información preliminar para el reporte (sin Guia asociada)
-	INSERT INTO @Preliminar 
+	INSERT INTO #Preliminar 
 	SELECT
 		origin = CO.codigoIATA,
 		destination = CD.codigoIATA,
@@ -180,31 +169,29 @@ BEGIN
 		idGuiaHouseDetalle = HD.id,
 		idCodigoDeBarra = HD.idCodigoDeBarra,
 		CB.idDetalleIngreso
-	FROM @ConsigneesSelected CS
-		INNER JOIN GuiasHouse HE ON HE.ConsigneeId = CS.id
-		INNER JOIN GuiasHouseDetalles HD ON HD.idGuiaHouse = HE.id
-		INNER JOIN DetalleMercancias DM ON DM.id = HD.idDetalleMercancia
-		INNER JOIN Exportadores EX ON EX.id = HE.idExportador
-		INNER JOIN Ciudades CO ON CO.id = HE.idCiudadPuertoOrigen
-		INNER JOIN Ciudades CD ON CD.id = HE.idCiudadPuertoDestino
-		INNER JOIN TiposDePieza TP ON TP.id = HD.idTipoDePieza
-		LEFT JOIN Guias GU ON GU.id = HE.idGuia
-		LEFT JOIN Transportes TR ON TR.id = HE.idTransporteOrigen
-		LEFT JOIN CodigosDeBarra CB ON CB.id = HD.idCodigoDeBarra
-		LEFT JOIN DetalleIngresos DI ON DI.id = CB.idDetalleIngreso
-		LEFT JOIN EncabezadoIngresos EI ON EI.id = DI.idEncabezadoIngreso
-		LEFT JOIN Empresas EM ON EM.id = DI.idEmpresa
+	FROM #ConsigneesSelected CS
+	INNER JOIN GuiasHouse HE WITH (NOLOCK) ON HE.ConsigneeId = CS.id
+	INNER JOIN GuiasHouseDetalles HD WITH (NOLOCK) ON HD.idGuiaHouse = HE.id
+	INNER JOIN DetalleMercancias DM WITH (NOLOCK) ON DM.id = HD.idDetalleMercancia
+	INNER JOIN Exportadores EX WITH (NOLOCK) ON EX.id = HE.idExportador
+	INNER JOIN Ciudades CO WITH (NOLOCK) ON CO.id = HE.idCiudadPuertoOrigen
+	INNER JOIN Ciudades CD WITH (NOLOCK) ON CD.id = HE.idCiudadPuertoDestino
+	INNER JOIN TiposDePieza TP WITH (NOLOCK) ON TP.id = HD.idTipoDePieza
+	LEFT JOIN Guias GU WITH (NOLOCK) ON GU.id = HE.idGuia
+	LEFT JOIN Transportes TR WITH (NOLOCK) ON TR.id = HE.idTransporteOrigen
+	LEFT JOIN CodigosDeBarra CB WITH (NOLOCK) ON CB.id = HD.idCodigoDeBarra
+	LEFT JOIN DetalleIngresos DI WITH (NOLOCK) ON DI.id = CB.idDetalleIngreso
+	LEFT JOIN EncabezadoIngresos EI WITH (NOLOCK) ON EI.id = DI.idEncabezadoIngreso
+	LEFT JOIN Empresas EM WITH (NOLOCK) ON EM.id = DI.idEmpresa
 	WHERE GU.id IS NULL
-		AND HE.fechaOrigen >= @StartDate
-		AND HE.fechaOrigen < @EndDate
+		AND HE.fechaOrigen BETWEEN @StartDate AND @EndDate
 
 	-- Eliminando temperatura para embarques que no vienen de Ecuador (ALIANZA LOGISTIKA TDGE S.A.)
-	UPDATE @Preliminar
+	UPDATE #Preliminar
 	SET temp = NULL
 	WHERE ISNULL(codigoEmpresa, '') <> 'UIO'
 
-	-- Insertando valores agrupados
-	INSERT INTO @Final
+	INSERT INTO #Final
 	SELECT
 		origin,
 		destination,
@@ -232,7 +219,7 @@ BEGIN
 		temp = AVG(temp),
 		idGuia,
 		idGuiaHouse = CONVERT(VARCHAR(128), idGuiaHouse)
-	FROM @Preliminar
+	FROM #Preliminar
 	GROUP BY
 		origin,
 		destination,
@@ -252,40 +239,35 @@ BEGIN
 		idGuia,
 		idGuiaHouse
 
-	-- Calculando el chargableWeight
-	UPDATE @Final
+	UPDATE #Final
 	SET chargableWeight = IIF(grossWeight > volumeWeight, grossWeight, volumeWeight)
 
 	-- Calculando los pesos por FB
-	UPDATE @Final
+	UPDATE #Final
 	SET
 		grossWeightFB = grossWeight / fb,
 		volumeWeightFB = volumeWeight / fb,
-		chargableWeightFB = chargableWeight / fb
+		chargableWeightFB = chargableWeight / fb,
+		shipmentNr = CASE 
+			WHEN LEN(shipmentNr) = 11 THEN SUBSTRING(shipmentNr, 1, 3) + '-' + SUBSTRING(shipmentNr, 4, 4) + ' ' + SUBSTRING(shipmentNr, 8, 4)
+			ELSE shipmentNr
+			END,
+		boxDimmInches = CASE
+			WHEN boxDimmInches IN('0.0x0.0x0.0','0,0x0,0x0,0') THEN NULL
+			ELSE boxDimmInches
+			END,
+		boxDimmCms = CASE
+			WHEN boxDimmCms = '0x0x0' THEN NULL
+			ELSE boxDimmCms
+			END
 
-	-- Dando formato al shipmentNr
-	UPDATE @Final
-	SET shipmentNr = SUBSTRING(shipmentNr, 1, 3) + '-' + SUBSTRING(shipmentNr, 4, 4) + ' ' + SUBSTRING(shipmentNr, 8, 4)
-	WHERE LEN(shipmentNr) = 11
-
-	-- Si no tiene dimensiones mostrar vacío
-	UPDATE @Final
-	SET boxDimmInches = NULL
-	WHERE boxDimmInches = '0.0x0.0x0.0'
-		OR boxDimmInches = '0,0x0,0x0,0'
-
-	UPDATE @Final
-	SET boxDimmCms = NULL
-	WHERE boxDimmCms = '0x0x0'
-
-	-- Mostrando los resultados finales
 	SELECT 
-		id = CONVERT(VARCHAR(64), NEWID()),
+		id = CONVERT(VARCHAR(10), ROW_NUMBER() OVER (ORDER BY [date], shipmentNr, house)),
 		[year] = YEAR([date]),
 		[week] = DATEPART(wk, [date]),
 		[month] = FORMAT([date], 'MMMM', 'en-US'),
 		*
-	FROM @Final
+	FROM #Final
 	ORDER BY 
 		[date],
 		shipmentNr,
@@ -296,7 +278,7 @@ END
 /*
 ===== EJEMPLOS DE USO =====
 
--- 1. Prueba básica con un consignatario
+-- 1. Prueba básica con un consignatario (28 rows)
 
 EXEC AC_pro_GetShipmentAnalyticsReports 
 	'ETY0000000008142', 
@@ -311,12 +293,12 @@ EXEC pro_ReportesAnaliticaEmbarques
 -- 2. Prueba con multiples consignatarios
 
 EXEC AC_pro_GetShipmentAnalyticsReports 
-	'ETY0000000006144,ETY0000000008162', 
+	'ETY0000000008683,ETY0000000008142', 
 	'2026-01-01 00:00:00', 
-	'2026-01-10 00:00:00'
+	'2026-10-01 00:00:00'
 
 EXEC pro_ReportesAnaliticaEmbarques 
-	'CLI0119075,CLI0116792', 
+	'CLI0120245,CLI0119075', 
 	'2026-01-01 00:00:00.000', 
 	'2026-10-01 00:00:00.000'
 */

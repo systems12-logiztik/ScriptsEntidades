@@ -11,6 +11,8 @@ CREATE OR ALTER FUNCTION dbo.f_SearchEntities
 )
 RETURNS @Results TABLE (
     Id VARCHAR(16),
+    IdCliente VARCHAR(16),
+    BillToConsigneeId VARCHAR(16),
     BillToId VARCHAR(16),
     ConsigneeId VARCHAR(16),
     BillToName VARCHAR(256),
@@ -30,6 +32,8 @@ BEGIN
             INSERT INTO @Results
             SELECT DISTINCT 
                 ER.Id,
+                ER.ReferenceId AS IdCliente,
+                ER.Id AS BillToConsigneeId,
                 ER.EntityTypeId AS BillToId,
                 ER.ChildEntityTypeId AS ConsigneeId,
                 EN.[Name] AS BillToName,
@@ -48,6 +52,8 @@ BEGIN
             INSERT INTO @Results
             SELECT DISTINCT 
                 ET.Id,
+                ET.ReferenceId AS IdCliente,
+                NULL AS BillToConsignee,
                 NULL AS BillToId,
                 ET.Id AS ConsigneeId,
                 NULL AS BillToName,
@@ -67,6 +73,8 @@ BEGIN
         INSERT INTO @Results
         SELECT DISTINCT 
             ER.Id,
+            ER.ReferenceId AS IdCliente,
+            ER.Id AS BillToConsigneeId,
             ER.EntityTypeId AS BillToId,
             ER.ChildEntityTypeId AS ConsigneeId,
             EN.[Name] AS BillToName,
@@ -81,11 +89,32 @@ BEGIN
         RETURN;
     END
 
+    IF @SearchType = 'IdConsignee'
+    BEGIN
+        INSERT INTO @Results
+        SELECT DISTINCT 
+            ET.Id,
+            ET.ReferenceId AS IdCliente,
+            NULL AS BillToConsignee,
+            NULL AS BillToId,
+            ET.Id AS ConsigneeId,
+            NULL AS BillToName,
+            EN.[Name] AS [Name]
+        FROM EntityTypes ET WITH (NOLOCK)
+        INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
+        WHERE ET.[Status] = 1
+        AND ET.EntityType = 2
+        AND ET.Id IN (SELECT LTRIM(RTRIM(value)) FROM STRING_SPLIT(@SearchTerm, ','));
+        RETURN;
+    END
+
     IF @SearchType = 'BillTo'
     BEGIN
         INSERT INTO @Results
         SELECT DISTINCT 
             ER.Id,
+            ER.ReferenceId AS IdCliente,
+            ER.Id AS BillToConsigneeId,
             ER.EntityTypeId AS BillToId,
             ER.ChildEntityTypeId AS ConsigneeId,
             EN.[Name] AS BillToName,
@@ -106,6 +135,8 @@ BEGIN
         INSERT INTO @Results
         SELECT DISTINCT 
             ER.ChildEntityTypeId,
+            ER.ReferenceId AS IdCliente,
+            ER.Id AS BillToConsigneeId,
             ER.EntityTypeId AS BillToId,
             ER.ChildEntityTypeId AS ConsigneeId,
             EN.[Name] AS BillToName,
@@ -123,6 +154,8 @@ BEGIN
         INSERT INTO @Results
         SELECT DISTINCT 
             ET.Id,
+            ET.ReferenceId AS IdCliente,
+            NULL AS BillToConsignee,
             NULL AS BillToId,
             ET.Id AS ConsigneeId,
             NULL AS BillToName,
@@ -139,14 +172,3 @@ BEGIN
     RETURN;
 END
 GO
-
-/*
--- Buscar BillTo por nombre
-SELECT * FROM dbo.f_SearchEntities('FLOR', 'BillTo')
- 
--- Buscar Consignee por alias o nombre
-SELECT * FROM dbo.f_SearchEntities('allu', 'Consignee')
- 
--- Buscar ShipTo solo por nombre (no por alias)
-SELECT * FROM dbo.f_SearchEntities('allu', 'ShipTo')
-*/

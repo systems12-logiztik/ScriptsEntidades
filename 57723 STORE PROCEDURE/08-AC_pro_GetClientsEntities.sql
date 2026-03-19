@@ -82,7 +82,11 @@ BEGIN
             SELECT
             @EntityIdCE AS EntityId,
             @ClientId AS IdCliente,
+            CE.BillToId,
+            CE.ConsigneeId,
             @EntityType AS EntityType
+            FROM v_ClientsEntities CE WITH (NOLOCK)
+            WHERE CE.Id = @EntityIdCE
             RETURN
         END
 
@@ -95,6 +99,8 @@ BEGIN
             CREATE TABLE #TMP_ClientsEntities (
                 EntityId VARCHAR(16),
                 IdCliente VARCHAR(16),
+                BillToId VARCHAR(16),
+                ConsigneeId VARCHAR(16),
                 EntityType VARCHAR(32)
             )
             
@@ -102,6 +108,8 @@ BEGIN
             SELECT
             CE.Id AS EntityId,
             CE.IdCliente AS IdCliente,
+            CE.BillToId,
+            CE.ConsigneeId,
             CE.TipoCliente AS EntityType
             FROM v_ClientsEntities CE WITH (NOLOCK)
             WHERE CE.BillToId = @EntityId
@@ -111,6 +119,8 @@ BEGIN
                 SELECT
                 EntityId,
                 IdCliente,
+                BillToId,
+                ConsigneeId,
                 EntityType
                 FROM #TMP_ClientsEntities
                 RETURN
@@ -135,7 +145,11 @@ BEGIN
             SELECT
             @EntityIdCE AS EntityId,
             @ClientId AS IdCliente,
+            CE.BillToId,
+            CE.ConsigneeId,
             @EntityType AS EntityType
+            FROM v_ClientsEntities CE WITH (NOLOCK)
+            WHERE CE.IdCliente = @ClientId
             RETURN
         END
         ELSE IF @EntityType = 'GRUPOCLIENTE'
@@ -153,6 +167,8 @@ BEGIN
             SELECT
             CE.Id AS EntityId,
             CG.IdCliente AS IdCliente,
+            CE.BillToId,
+            CE.ConsigneeId,
             @EntityType AS EntityType
             FROM #TMP_ClientsGroup CG
             LEFT JOIN v_ClientsEntities CE WITH (NOLOCK) ON CE.IdCliente = CG.IdCliente
@@ -163,6 +179,8 @@ BEGIN
         SELECT
         CAST(NULL AS VARCHAR(16)) AS EntityId,
         CAST(NULL AS VARCHAR(16)) AS IdCliente,
+        CAST(NULL AS VARCHAR(16)) AS BillToId,
+        CAST(NULL AS VARCHAR(16)) AS ConsigneeId,
         CAST(NULL AS VARCHAR(32)) AS EntityType
         WHERE 1 = 0
     END TRY
