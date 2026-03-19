@@ -1,6 +1,6 @@
 /*
 VERSION		MODIFIEDBY			MODIFIEDDATE	  HU			 MODIFICATION
-1			Fernando Ordoñez	2026-01-26		  57725			 Initial code base on pro_EtiquetaGrandeTempDefaul
+1			Fernando Ordoï¿½ez	2026-01-26		  57725			 Initial code base on pro_EtiquetaGrandeTempDefaul
 */
 CREATE  OR ALTER PROCEDURE [dbo].[AC_pro_LargeLabelTempDefault] (
 	@codigos AS XML,
@@ -125,13 +125,13 @@ BEGIN
 
 				IIF((SELECT TOP 1 valor FROM ParametrosCatalogos pc
 						INNER JOIN ParametrosLista pl ON pc.idParametroLista = pl.id
-					WHERE pc.EntityTypeId = g.ConsigneeId AND pl.idEmpresa = g.idEmpresa AND pl.codigo = 'TipoServicio') = 'COMERCIALIZADORA',
+					WHERE pc.idEntidad = g.ConsigneeId AND pl.idEmpresa = g.idEmpresa AND pl.codigo = 'TipoServicio') = 'COMERCIALIZADORA',
 						vcd.nombre,
 				IIF (vst.id IS NOT NULL, IIF(vst.Nombre IS NULL, vst.BillToName, vst.Nombre), IIF(vcd.Nombre IS NULL, vcd.BillToName, vcd.Nombre))),
 			
 				IIF((SELECT TOP 1 valor FROM ParametrosCatalogos pc
 						INNER JOIN ParametrosLista pl ON pc.idParametroLista = pl.id
-					WHERE pc.EntityTypeId = g.ConsigneeId AND pl.idEmpresa = g.idEmpresa AND pl.codigo = 'TipoServicio') = 'COMERCIALIZADORA',
+					WHERE pc.idEntidad = g.ConsigneeId AND pl.idEmpresa = g.idEmpresa AND pl.codigo = 'TipoServicio') = 'COMERCIALIZADORA',
 			
 				CONCAT(SUBSTRING(ccd.nombre, 0, 16) + ' ', ecd.codigoISO, ISNULL(', ' + vcd.codigozip, '')),
 				CASE WHEN vst.id IS NOT NULL 
@@ -145,7 +145,7 @@ BEGIN
 				NULL, --[informacionCodigoQr]
 				bd.Nombre,
 				0,
-				--obtención de codigo de barra de más de 11 dígitos si existe
+				--obtenciï¿½n de codigo de barra de mï¿½s de 11 dï¿½gitos si existe
 				(SELECT TOP 1 codInfo.codigoBarraEntidad FROM CodigosDeBarrasInfoAdicional AS codInfo 
 					WHERE codInfo.codigoBarra=itc.codigoPieza
 					ORDER BY codInfo.fechaCreacion DESC) AS codigoBarraGrande,
@@ -288,7 +288,7 @@ BEGIN
 				NULL, --[informacionCodigoQr]
 				bd.nombre,
 				0,
-				--obtención de codigo de barra de más de 11 dígitos si existe
+				--obtenciï¿½n de codigo de barra de mï¿½s de 11 dï¿½gitos si existe
 				(SELECT TOP 1 codInfo.codigoBarraEntidad FROM CodigosDeBarrasInfoAdicional AS codInfo 
 					WHERE codInfo.codigoBarra=cb.codigoBarra
 					ORDER BY codInfo.fechaCreacion DESC) AS codigoBarraGrande,
@@ -427,7 +427,7 @@ BEGIN
 				NULL, --[informacionCodigoQr]
 				b.nombre,
 				ghd.impresion,
-				--obtención de codigo de barra de más de 11 dígitos si existe
+				--obtenciï¿½n de codigo de barra de mï¿½s de 11 dï¿½gitos si existe
 				(SELECT TOP 1 codInfo.codigoBarraEntidad FROM CodigosDeBarrasInfoAdicional codInfo 
 					WHERE codInfo.codigoBarra=ghd.codigoBarra
 					ORDER BY codInfo.fechaCreacion DESC) AS codigoBarraGrande,

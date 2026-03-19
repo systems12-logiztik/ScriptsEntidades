@@ -1,6 +1,6 @@
 /*
 VERSION		MODIFIEDBY			MODIFIEDDATE	  HU			 MODIFICATION
-1			Fernando Ordoñez	2026-01-26		  57725			 Initial code base on pro_ConsultarCodigoBarrasLinks
+1			Fernando Ordoï¿½ez	2026-01-26		  57725			 Initial code base on pro_ConsultarCodigoBarrasLinks
 */
 
 CREATE OR ALTER PROCEDURE [dbo].[AC_pro_GetBarCodeLinks]
@@ -471,7 +471,7 @@ BEGIN
 						INNER JOIN Catalogos catNot ON ng.idCatalogo = catNot.id ' 
 				END,
 				@consigneeTable,' vcd ON ISNULL(gh.BilltoConsigneeId, gh.ConsigneeId) = vcd.id 
-				LEFT JOIN ParametrosCatalogos pmc WITH(NOLOCK) ON gh.ConsigneeId = pmc.EntityTypeId AND pmc.idParametroLista = @idParametroLista', 
+				LEFT JOIN ParametrosCatalogos pmc WITH(NOLOCK) ON gh.ConsigneeId = pmc.idEntidad AND pmc.idParametroLista = @idParametroLista', 
 				CONVERT(VARCHAR(MAX), 
 				CASE 
 					WHEN @camion IS NULL AND @nroDespacho IS NULL THEN 
