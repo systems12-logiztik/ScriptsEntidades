@@ -2,7 +2,7 @@
 VERSION		AUTOR				FECHA			HU			CAMBIO    
 01			Jean Martillo       2026-01-28		57727		Initial code - store procedure based on pro_ObtenerOrdenesDeVenta
 */    
-CREATE OR ALTER PROCEDURE [dbo].[AC_pro_GetSalesOrdes]    
+CREATE OR ALTER PROCEDURE [dbo].[AC_pro_GetSalesOrders]    
  @FechaIni DATETIME,    
  @FechaFin DATETIME,    
  @IdSistema INT,    
@@ -202,7 +202,7 @@ BEGIN
 END      
 
 /*    
-execute dbo.AC_pro_GetSalesOrdes '25/01/2026 00:00:00', '10/02/2026 00:00:00', 100, 'CARRIER', 'EMP014';
-execute dbo.AC_pro_GetSalesOrdes '22/02/2026 00:00:00', '24/02/2026 00:00:00', 100, 'CARRIER', 'EMP014', 'ETY0000000008684';
-execute dbo.AC_pro_GetSalesOrdes '22/02/2026 00:00:00', '24/02/2026 00:00:00', 100, 'CARRIER', 'EMP014', null;
+execute dbo.AC_pro_GetSalesOrders '25/01/2026 00:00:00', '10/02/2026 00:00:00', 100, 'CARRIER', 'EMP014';
+execute dbo.AC_pro_GetSalesOrders '22/02/2026 00:00:00', '24/02/2026 00:00:00', 100, 'CARRIER', 'EMP014', 'ETY0000000008684';
+execute dbo.AC_pro_GetSalesOrders '22/02/2026 00:00:00', '24/02/2026 00:00:00', 100, 'CARRIER', 'EMP014', null;
 */ 
