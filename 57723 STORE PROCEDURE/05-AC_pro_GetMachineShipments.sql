@@ -1,6 +1,6 @@
 /*
 VERSION		MODIFIEDBY			MODIFIEDDATE	HU			MODIFICATION
-1			José Ganchozo		2026-01-04		53095		Add BillToName filter and Change table Clientes to v_ClientsEntities. SP based on pro_ListaEmbarqueMaquina
+1			Josï¿½ Ganchozo		2026-01-04		53095		Add BillToName filter and Change table Clientes to v_ClientsEntities. SP based on pro_ListaEmbarqueMaquina
 */
 
 CREATE OR ALTER PROCEDURE [dbo].[AC_pro_GetMachineShipments]
@@ -19,7 +19,7 @@ CREATE OR ALTER PROCEDURE [dbo].[AC_pro_GetMachineShipments]
 	@nombreBillTo		VARCHAR(128)
 )
 AS
-BEGIN 
+BEGIN
 
 	DECLARE @prefijo VARCHAR(32),
 			@sql_script NVARCHAR(MAX),
@@ -199,7 +199,7 @@ BEGIN 
 			SUM(1) totalPcsHouse,
 			SUM(1) cntPiezas
 		FROM #tmpBasico tb
-				LEFT JOIN ProgramacionCarrier pc ON  tb.idGuiaHouseDetalle = pc.idGuiaHouseDetalle  
+				LEFT JOIN ProgramacionCarrier pc ON tb.idGuiaHouseDetalle = pc.idGuiaHouseDetalle
 				LEFT JOIN CodigosRelacionSistemas crs (NOLOCK) ON (pc.idCarrier = crs.idEntidad AND crs.tipoEntidad = 'CARRIER' AND crs.idSistemaEntidad = 100) 
 				LEFT JOIN machine_test..Input i ON tb.codigoBarra = i.BarCode AND tb.idGuia = i.IdAWB   
 				LEFT JOIN machine_test..[Output] o ON tb.codigoBarra = o.BarCode

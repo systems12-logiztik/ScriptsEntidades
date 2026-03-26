@@ -46,7 +46,7 @@ BEGIN
   FROM #tmp_solicitudes SOL    
   INNER JOIN GuiasHouseDetalles GHD WITH (NOLOCK,INDEX=PK_GuiasHouseDetalles) ON GHD.id = SOL.idGuiasHouseDetalle    
   INNER JOIN GuiasHouse GH WITH(NOLOCK) ON GHD.idGuiaHouse = GH.id AND GH.idEmpresa = @IdEmpresa  
-  LEFT JOIN v_ClientsEntities CI ON ISNULL(GH.BillToConsigneeId, GH.ConsigneeId) = CI.id  
+  LEFT JOIN v_ClientsEntities CI ON GH.ConsigneeId = CI.id  
   OUTER APPLY  (  SELECT TOP 1 BD.nombre, BD.id    
 	  FROM UbicacionPiezas UP    
 	  INNER JOIN Ubicaciones UB WITH(NOLOCK) ON UP.idUbicacion = UB.id    

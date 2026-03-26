@@ -42,8 +42,8 @@ BEGIN
 		FROM
 			GuiasHouse AS GH WITH (NOLOCK)
 			INNER JOIN GuiasHouseDetalles AS GHD WITH (NOLOCK) ON GHD.idGuiaHouse = GH.id AND GHD.estadoPieza <> 'DISPATCHED WH'
-			INNER JOIN v_ClientsEntities AS CDIS WITH (NOLOCK) ON ISNULL(GH.BilltoConsigneeId,GH.ConsigneeId) = CDIS.id
-			INNER JOIN v_ClientsEntities AS CFIN WITH (NOLOCK) ON ISNULL(GHD.ShipToId,GHD.ConsigneeId) = CFIN.id
+			INNER JOIN v_ClientsEntities AS CDIS WITH (NOLOCK) ON GH.ConsigneeId = CDIS.id
+			INNER JOIN v_ClientsEntities AS CFIN WITH (NOLOCK) ON GHD.ShipToId = CFIN.id
 			LEFT JOIN ProgramacionCarrier AS PC WITH (NOLOCK) ON GHD.id = PC.idGuiaHouseDetalle
 			LEFT JOIN ProgramacionManifiesto AS PM WITH (NOLOCK) ON PC.id = PM.idProgramacionCarrier
 			LEFT JOIN ManifiestosDespacho AS MD WITH (NOLOCK) ON PM.idManifiestoDespacho = MD.id

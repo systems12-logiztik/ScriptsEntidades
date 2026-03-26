@@ -155,7 +155,7 @@ BEGIN
 				Guias g WITH (NOLOCK)
 				INNER JOIN Puertos po ON po.id = g.idPuertoOrigen
 				INNER JOIN Puertos pd ON pd.id = g.idPuertoDestino
-				INNER JOIN v_ClientsEntities vcd ON ISNULL(g.ConsigneeId, g.BillToConsigneeId)= vcd.id
+				INNER JOIN v_ClientsEntities vcd ON g.ConsigneeId= vcd.id
 				INNER JOIN Ciudades ccd ON vcd.idCiudad = ccd.id
 				INNER JOIN Estados ecd ON vcd.idEstado = ecd.id
 				INNER JOIN Coordinaciones coo WITH (NOLOCK) ON g.id =coo.idGuia
@@ -298,7 +298,7 @@ BEGIN
 				Guias g WITH (NOLOCK)
 				INNER JOIN Puertos po ON g.idPuertoOrigen = po.id
 				INNER JOIN Puertos pd ON g.idPuertoDestino = pd.id
-				INNER JOIN v_ClientsEntities vcd ON ISNULL(g.ConsigneeId, g.BillToConsigneeId) = vcd.id
+				INNER JOIN v_ClientsEntities vcd ON g.ConsigneeId = vcd.id
 				INNER JOIN Ciudades ccd ON vcd.idCiudad = ccd.id
 				INNER JOIN Estados ecd ON vcd.idEstado = ecd.id
 				INNER JOIN Coordinaciones co WITH (NOLOCK) ON g.id = co.idGuia
@@ -441,7 +441,7 @@ BEGIN
 				INNER JOIN Ciudades cd ON gh.idCiudadPuertoDestino=cd.id
 				INNER JOIN Exportadores ex ON gh.idExportador=ex.id
 				INNER JOIN Bodegas b ON gh.idBodega=b.id
-				INNER JOIN v_ClientsEntities vcd ON ISNULL(gh.ConsigneeId, gh.BilltoConsigneeId) = vcd.id
+				INNER JOIN v_ClientsEntities vcd ON gh.ConsigneeId = vcd.id
 				INNER JOIN Ciudades ccd ON vcd.idCiudad=ccd.id
 				INNER JOIN Estados ecd ON vcd.idEstado=ecd.id
 				LEFT OUTER JOIN ProgramacionCarrier pc WITH (NOLOCK) ON ghd.id=pc.idGuiaHouseDetalle

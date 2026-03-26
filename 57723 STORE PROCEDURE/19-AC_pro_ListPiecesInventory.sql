@@ -67,7 +67,7 @@ BEGIN
 		INNER JOIN [GuiasHouse] AS	GH		WITH(NOLOCK) ON V.id = GH.BillToConsigneeId
 		INNER JOIN [GuiasHouseDetalles] AS [x]			WITH(NOLOCK) ON GH.id = [x].idGuiaHouse
 		INNER JOIN [Exportadores] AS EX	WITH(NOLOCK) ON GH.[idExportador] = EX.[id]
-		INNER JOIN [v_ClientsEntities] AS CCO		ON ISNULL(GH.BillToConsigneeId, GH.ConsigneeId) = CCO.[Id]
+		INNER JOIN [v_ClientsEntities] AS CCO		ON GH.ConsigneeId = CCO.[Id]
 		INNER JOIN [v_ClientsEntities] AS CF		ON [x].ShipToId = CF.[Id]
 		INNER JOIN [v_ClientsEntities] AS COG		ON [x].ConsigneeId = COG.[Id]
 		INNER JOIN (
@@ -154,7 +154,7 @@ BEGIN
 		FROM [GuiasHouse] AS	GH		WITH(NOLOCK) 
 		INNER JOIN [GuiasHouseDetalles] AS [x]			WITH(NOLOCK) ON GH.[id] = [x].[idGuiaHouse]
 		INNER JOIN [Exportadores] AS EX	WITH(NOLOCK) ON GH.[idExportador] = EX.[id]
-		INNER JOIN [v_ClientsEntities] AS CCO		ON ISNULL(GH.BillToConsigneeId, GH.ConsigneeId) = CCO.[Id]
+		INNER JOIN [v_ClientsEntities] AS CCO		ON GH.ConsigneeId = CCO.[Id]
 		INNER JOIN [v_ClientsEntities] AS CF		ON [x].ShipToId = CF.[Id]
 		INNER JOIN [v_ClientsEntities] AS COG		ON [x].ConsigneeId = COG.[Id]
 		INNER JOIN (
