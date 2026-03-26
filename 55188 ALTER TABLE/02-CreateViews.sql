@@ -12,22 +12,28 @@ AS
         ER.ChildEntityTypeId             AS ConsigneeId,
         ER.ReferenceId                   AS IdCliente,
         EN.[Name]                        AS BillToName,
+        ER.SubType,
+        ET.[Status],
         'BillToConsignee'                AS tipoCliente,
         EN.CountryId                     AS idPais,
         EN.SubdivisionId                 AS idEstado,
         EN.CityId                        AS idCiudad,
-        ER.Alias                         AS nombre,
+        CASE 
+			WHEN ER.SubType = 2 THEN ER.Alias
+			ELSE EN2.[Name]
+		END								 AS nombre,
         EN.Address1                      AS direccion,
         EN.PostalCode                    AS codigozip,
-        NULL                             AS email,
-        NULL                             AS telefono,
-        NULL                             AS identificacion,
-        NULL                             AS tipoIdentificacion,
-        CASE ER.[Status] WHEN 1 THEN 'ACTIVO' WHEN 0 THEN 'INACTIVO' ELSE 'OTRO' END AS [status]
+        CAST(NULL AS VARCHAR(16))        AS email,
+        CAST(NULL AS VARCHAR(16))        AS telefono,
+        CAST(NULL AS VARCHAR(16))        AS identificacion,
+        CAST(NULL AS VARCHAR(16))        AS tipoIdentificacion
     FROM EntityRelations ER WITH (NOLOCK)
     INNER JOIN EntityTypes ET WITH (NOLOCK) ON ET.Id = ER.EntityTypeId
+    INNER JOIN EntityTypes ET2 WITH (NOLOCK) ON ET2.Id = ER.ChildEntityTypeId
     INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
-    WHERE ET.[Status] = 1
+    INNER JOIN Entities EN2 WITH (NOLOCK) ON EN2.Id = ET2.EntityId
+    WHERE ET.[Status] IN (1, 3)
     AND ET.EntityType = 1
     AND ER.[Status] = 1
 
@@ -40,6 +46,8 @@ UNION ALL
         ET.Id                            AS ConsigneeId,
         ET.ReferenceId                   AS IdCliente,
         NULL                             AS BillToName,
+        NULL                             AS SubType,
+        ET.[Status],
         'Consignee'                      AS tipoCliente,
         EN.CountryId                     AS idPais,
         EN.SubdivisionId                 AS idEstado,
@@ -47,14 +55,13 @@ UNION ALL
         EN.[Name]                        AS nombre,
         EN.Address1                      AS direccion,
         EN.PostalCode                    AS codigozip,
-        NULL                             AS email,
-        NULL                             AS telefono,
-        NULL                             AS identificacion,
-        NULL                             AS tipoIdentificacion,
-        CASE ET.[Status] WHEN 1 THEN 'ACTIVO' WHEN 0 THEN 'INACTIVO' ELSE 'OTRO' END AS [status]
+        CAST(NULL AS VARCHAR(16))        AS email,
+        CAST(NULL AS VARCHAR(16))        AS telefono,
+        CAST(NULL AS VARCHAR(16))        AS identificacion,
+        CAST(NULL AS VARCHAR(16))        AS tipoIdentificacion
     FROM EntityTypes ET WITH (NOLOCK)
     INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
-    WHERE ET.[Status] = 1
+    WHERE ET.[Status] IN (1, 3)
     AND ET.EntityType = 2
 GO
 
@@ -67,11 +74,17 @@ AS
         ER.ChildEntityTypeId             AS ConsigneeId,
         ER.ReferenceId                   AS IdCliente,
         EN.[Name]                        AS BillToName,
+        ER.SubType,
+        ET.[Status],
         'BillToConsignee'                AS tipoCliente,
         EN.CountryId                     AS idPais,
         EN.SubdivisionId                 AS idEstado,
         EN.CityId                        AS idCiudad,
-        ER.Alias                         AS nombre,
+        CASE 
+			WHEN ER.SubType = 2 
+			THEN ER.Alias
+			ELSE EN2.[Name]
+		END								 AS nombre,
         EN.Address1                      AS direccion,
         EN.PostalCode                    AS codigozip,
         MAX(CASE WHEN MD.identifier = 'EMAIL' THEN MD.[value] END)   AS email,
@@ -89,16 +102,17 @@ AS
             MAX(CASE WHEN MD.identifier = 'PASSPORT' THEN MD.identifier END),
             MAX(CASE WHEN MD.identifier = 'FISCALIDENTIFICATIONNUMBER' THEN MD.identifier END),
             MAX(CASE WHEN MD.identifier = 'IMPORTEROFRECORD' THEN MD.identifier END)
-        ) AS tipoIdentificacion,
-        CASE ER.[Status] WHEN 1 THEN 'ACTIVO' WHEN 0 THEN 'INACTIVO' ELSE 'OTRO' END AS [status]
+        ) AS tipoIdentificacion
     FROM EntityRelations ER WITH (NOLOCK)
     INNER JOIN EntityTypes ET WITH (NOLOCK) ON ET.Id = ER.EntityTypeId
+    INNER JOIN EntityTypes ET2 WITH (NOLOCK) ON ET2.Id = ER.ChildEntityTypeId
     INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
-    CROSS APPLY OPENJSON(ET.Metadata) WITH (identifier VARCHAR(32), [value] VARCHAR(128)) MD
-    WHERE ET.[Status] = 1
+    INNER JOIN Entities EN2 WITH (NOLOCK) ON EN2.Id = ET2.EntityId
+    CROSS APPLY OPENJSON(CASE WHEN ISJSON(ET.Metadata) = 1 THEN ET.Metadata ELSE '[]' END) WITH (identifier VARCHAR(32), [value] VARCHAR(128)) MD
+    WHERE ET.[Status] IN (1, 3)
     AND ET.EntityType = 1
     AND ER.[Status] = 1
-    GROUP BY ER.Id, EN.Id, ER.EntityTypeId, ER.ChildEntityTypeId, ER.ReferenceId, EN.[Name],
+    GROUP BY ER.Id, EN.Id, ER.EntityTypeId, ER.ChildEntityTypeId, ER.ReferenceId, EN.[Name], EN2.[Name], ER.SubType, ET.[Status],
              EN.CountryId, EN.SubdivisionId, EN.CityId, ER.Alias, EN.Address1, EN.PostalCode, ER.[Status]
 
 UNION ALL
@@ -110,6 +124,8 @@ UNION ALL
         ET.Id                            AS ConsigneeId,
         ET.ReferenceId                   AS IdCliente,
         NULL                             AS BillToName,
+        NULL                             AS SubType,
+        ET.[Status],
         'Consignee'                      AS tipoCliente,
         EN.CountryId                     AS idPais,
         EN.SubdivisionId                 AS idEstado,
@@ -132,14 +148,13 @@ UNION ALL
             MAX(CASE WHEN MD.identifier = 'PASSPORT' THEN MD.identifier END),
             MAX(CASE WHEN MD.identifier = 'FISCALIDENTIFICATIONNUMBER' THEN MD.identifier END),
             MAX(CASE WHEN MD.identifier = 'IMPORTEROFRECORD' THEN MD.identifier END)
-        ) AS tipoIdentificacion,
-        CASE ET.[Status] WHEN 1 THEN 'ACTIVO' WHEN 0 THEN 'INACTIVO' ELSE 'OTRO' END AS [status]
+        ) AS tipoIdentificacion
     FROM EntityTypes ET WITH (NOLOCK)
     INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
-    OUTER APPLY OPENJSON(ET.Metadata) WITH (identifier VARCHAR(32), [value] VARCHAR(128)) MD
-    WHERE ET.[Status] = 1
+     CROSS APPLY OPENJSON(CASE WHEN ISJSON(ET.Metadata) = 1 THEN ET.Metadata ELSE '[]' END) WITH (identifier VARCHAR(32), [value] VARCHAR(128)) MD
+    WHERE ET.[Status] IN (1, 3)
     AND ET.EntityType = 2
-    GROUP BY ET.Id, EN.Id, ET.ReferenceId, EN.CountryId, EN.SubdivisionId, EN.CityId, 
+    GROUP BY ET.Id, EN.Id, ET.ReferenceId, EN.CountryId, EN.SubdivisionId, EN.CityId, ET.[Status], 
              EN.[Name], EN.Address1, EN.PostalCode, ET.[Status]
 GO
 
