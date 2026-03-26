@@ -1,6 +1,6 @@
 /*
 VERSION     MODIFIEDBY			MODIFIEDDATE		HU				MODIFICATION
-1			Jesús Yandún		2026-03-02			58766			Initial code: Based on pro_documentosDespachoNuevoPODClientes360
+1			Jesï¿½s Yandï¿½n		2026-03-02			58766			Initial code: Based on pro_documentosDespachoNuevoPODClientes360
 */
 
 CREATE OR ALTER PROCEDURE [dbo].[AC_pro_ShippingDocumentsPODClient360]
@@ -77,7 +77,7 @@ BEGIN
 		END
 
 		INSERT INTO #ClientesRelacionados
-			EXEC AC_pro_GetClientsEntities @EntityId = @entityId;
+			EXEC AC_pro_GetClientsEntities @EntityId = @entityId, @UserType = 'BILLTO';
 
 		INSERT INTO #temporalPods
 		SELECT 
