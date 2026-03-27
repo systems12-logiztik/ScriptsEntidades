@@ -1,6 +1,6 @@
 /*
 VERSION     MODIFIEDBY      MODIFIEDDATE    HU      MODIFICATION
-1           Luis Campos     2026-02-04      55188   Create fast search function for client entities
+5           Luis Campos     2026-03-25      55188   Apply optimizations: remove DISTINCT, use NOT EXISTS, add OPTION RECOMPILE
 */
 
 
@@ -30,7 +30,7 @@ BEGIN
         IF @SearchType IN ('IdBillTo', 'BillTo')
         BEGIN
             INSERT INTO @Results
-            SELECT DISTINCT 
+            SELECT 
                 ER.Id,
                 ER.ReferenceId AS IdCliente,
                 ER.Id AS BillToConsigneeId,
@@ -41,7 +41,7 @@ BEGIN
             FROM EntityRelations ER WITH (NOLOCK)
             INNER JOIN EntityTypes ET WITH (NOLOCK) ON ET.Id = ER.EntityTypeId
             INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
-            WHERE ET.[Status] = 1
+            WHERE ET.[Status] IN (1, 3)
             AND ET.EntityType = 1
             AND ER.[Status] = 1;
             RETURN;
@@ -50,7 +50,7 @@ BEGIN
         IF @SearchType IN ('Consignee', 'ShipTo')
         BEGIN
             INSERT INTO @Results
-            SELECT DISTINCT 
+            SELECT 
                 ET.Id,
                 ET.ReferenceId AS IdCliente,
                 NULL AS BillToConsignee,
@@ -60,7 +60,7 @@ BEGIN
                 EN.[Name] AS [Name]
             FROM EntityTypes ET WITH (NOLOCK)
             INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
-            WHERE ET.[Status] = 1
+            WHERE ET.[Status] IN (1, 3)
             AND ET.EntityType = 2;
             RETURN;
         END
@@ -71,7 +71,7 @@ BEGIN
     IF @SearchType = 'IdBillTo'
     BEGIN
         INSERT INTO @Results
-        SELECT DISTINCT 
+        SELECT 
             ER.Id,
             ER.ReferenceId AS IdCliente,
             ER.Id AS BillToConsigneeId,
@@ -82,7 +82,7 @@ BEGIN
         FROM EntityRelations ER WITH (NOLOCK)
         INNER JOIN EntityTypes ET WITH (NOLOCK) ON ET.Id = ER.EntityTypeId
         INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
-        WHERE ET.[Status] = 1
+        WHERE ET.[Status] IN (1, 3)
         AND ET.EntityType = 1
         AND ER.[Status] = 1
         AND ER.EntityTypeId IN (SELECT LTRIM(RTRIM(value)) FROM STRING_SPLIT(@SearchTerm, ','));
@@ -92,7 +92,7 @@ BEGIN
     IF @SearchType = 'IdConsignee'
     BEGIN
         INSERT INTO @Results
-        SELECT DISTINCT 
+        SELECT 
             ET.Id,
             ET.ReferenceId AS IdCliente,
             NULL AS BillToConsignee,
@@ -102,7 +102,7 @@ BEGIN
             EN.[Name] AS [Name]
         FROM EntityTypes ET WITH (NOLOCK)
         INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
-        WHERE ET.[Status] = 1
+        WHERE ET.[Status] IN (1, 3)
         AND ET.EntityType = 2
         AND ET.Id IN (SELECT LTRIM(RTRIM(value)) FROM STRING_SPLIT(@SearchTerm, ','));
         RETURN;
@@ -111,7 +111,7 @@ BEGIN
     IF @SearchType = 'BillTo'
     BEGIN
         INSERT INTO @Results
-        SELECT DISTINCT 
+        SELECT 
             ER.Id,
             ER.ReferenceId AS IdCliente,
             ER.Id AS BillToConsigneeId,
@@ -122,10 +122,11 @@ BEGIN
         FROM EntityRelations ER WITH (NOLOCK)
         INNER JOIN EntityTypes ET WITH (NOLOCK) ON ET.Id = ER.EntityTypeId
         INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
-        WHERE ET.[Status] = 1
+        WHERE ET.[Status] IN (1, 3)
         AND ET.EntityType = 1
         AND ER.[Status] = 1
-        AND EN.[Name] LIKE @SearchPattern;
+        AND EN.[Name] LIKE @SearchPattern
+        OPTION (RECOMPILE);
         RETURN;
     END
 
@@ -133,7 +134,7 @@ BEGIN
     BEGIN
         -- Buscar en EntityRelations.Alias solo para Consignee
         INSERT INTO @Results
-        SELECT DISTINCT 
+        SELECT 
             ER.ChildEntityTypeId,
             ER.ReferenceId AS IdCliente,
             ER.Id AS BillToConsigneeId,
@@ -145,14 +146,15 @@ BEGIN
         INNER JOIN EntityTypes ET WITH (NOLOCK) ON ET.Id = ER.EntityTypeId
         INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
         WHERE ER.[Status] = 1
-        AND ER.Alias LIKE @SearchPattern;
+        AND ER.Alias LIKE @SearchPattern
+        OPTION (RECOMPILE);
     END
 
     IF @SearchType IN ('Consignee', 'ShipTo')
     BEGIN
-        -- Buscar en EntityTypes.Name para ambos (evitar duplicados)
+        -- Buscar en EntityTypes.Name para ambos (usar NOT EXISTS para mejor performance)
         INSERT INTO @Results
-        SELECT DISTINCT 
+        SELECT 
             ET.Id,
             ET.ReferenceId AS IdCliente,
             NULL AS BillToConsignee,
@@ -162,24 +164,14 @@ BEGIN
             EN.[Name] AS [Name]
         FROM EntityTypes ET WITH (NOLOCK)
         INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
-        WHERE ET.[Status] = 1
+        WHERE ET.[Status] IN (1, 3)
         AND ET.EntityType = 2
         AND EN.[Name] LIKE @SearchPattern
-        AND ET.Id NOT IN (SELECT Id FROM @Results);
+        AND NOT EXISTS (SELECT 1 FROM @Results r WHERE r.Id = ET.Id)
+        OPTION (RECOMPILE);
         RETURN;
     END
 
     RETURN;
 END
 GO
-
-/*
--- Buscar BillTo por nombre
-SELECT * FROM f_SearchEntities('FLOR', 'BillTo')
- 
--- Buscar Consignee por alias o nombre
-SELECT * FROM f_SearchEntities('allu', 'Consignee')
- 
--- Buscar ShipTo solo por nombre (no por alias)
-SELECT * FROM f_SearchEntities('allu', 'ShipTo')
-*/
