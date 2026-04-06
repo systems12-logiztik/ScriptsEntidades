@@ -56,7 +56,6 @@ BEGIN
             FROM Clientes C WITH (NOLOCK)
             LEFT JOIN dbo.f_SearchEntities('', 'Consignee') FSE ON C.id = FSE.IdCliente
             WHERE C.id = @EntityId
-			AND C.[status] = 'ACTIVO'
             RETURN
         END
         -- =============================================================================================
@@ -68,7 +67,6 @@ BEGIN
             FROM GrupoClientes GC WITH (NOLOCK)
             LEFT JOIN dbo.f_SearchEntities('', 'Consignee') FSE ON GC.IdCliente = FSE.IdCliente
             WHERE GC.IdGrupoCliente = @EntityId
-			AND GC.[status] = 'ACTIVO'
             RETURN
         END
 

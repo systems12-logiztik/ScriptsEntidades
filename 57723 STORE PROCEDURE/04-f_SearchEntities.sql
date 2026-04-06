@@ -1,12 +1,13 @@
 /*
 VERSION     MODIFIEDBY      MODIFIEDDATE    HU      MODIFICATION
 5           Luis Campos     2026-03-25      55188   Apply optimizations: remove DISTINCT, use NOT EXISTS, add OPTION RECOMPILE
+6           Luis Campos     2026-04-01      55188   Optimize large ID lists with temp table instead of STRING_SPLIT in WHERE
 */
 
 
 CREATE OR ALTER FUNCTION dbo.f_SearchEntities
 (
-    @SearchTerm VARCHAR(256),
+    @SearchTerm VARCHAR(MAX),
     @SearchType VARCHAR(16)
 )
 RETURNS @Results TABLE (
@@ -27,7 +28,7 @@ BEGIN
     -- Si no hay término de búsqueda, retornar todos los registros según el tipo
     IF @SearchTerm IS NULL OR @SearchTerm = ''
     BEGIN
-        IF @SearchType IN ('IdBillTo', 'BillTo')
+        IF @SearchType IN ('BillTo')
         BEGIN
             INSERT INTO @Results
             SELECT 
@@ -68,8 +69,19 @@ BEGIN
 
     DECLARE @SearchPattern VARCHAR(258) = '%' + @SearchTerm + '%';
 
+    -- Crear tabla temporal para almacenar IDs cuando hay múltiples valores
+    DECLARE @IdList TABLE (
+        SearchId VARCHAR(16) PRIMARY KEY
+    );
+
     IF @SearchType = 'IdBillTo'
     BEGIN
+        -- Llenar tabla temporal con los IDs separados por coma
+        INSERT INTO @IdList
+        SELECT LTRIM(RTRIM(value))
+        FROM STRING_SPLIT(@SearchTerm, ',')
+        WHERE LTRIM(RTRIM(value)) <> '';
+
         INSERT INTO @Results
         SELECT 
             ER.Id,
@@ -82,15 +94,22 @@ BEGIN
         FROM EntityRelations ER WITH (NOLOCK)
         INNER JOIN EntityTypes ET WITH (NOLOCK) ON ET.Id = ER.EntityTypeId
         INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
+        INNER JOIN @IdList IL ON ER.EntityTypeId = IL.SearchId
         WHERE ET.[Status] IN (1, 3)
         AND ET.EntityType = 1
         AND ER.[Status] = 1
-        AND ER.EntityTypeId IN (SELECT LTRIM(RTRIM(value)) FROM STRING_SPLIT(@SearchTerm, ','));
+        OPTION (RECOMPILE);
         RETURN;
     END
 
     IF @SearchType = 'IdConsignee'
     BEGIN
+        -- Llenar tabla temporal con los IDs separados por coma
+        INSERT INTO @IdList
+        SELECT LTRIM(RTRIM(value))
+        FROM STRING_SPLIT(@SearchTerm, ',')
+        WHERE LTRIM(RTRIM(value)) <> '';
+
         INSERT INTO @Results
         SELECT 
             ET.Id,
@@ -102,9 +121,10 @@ BEGIN
             EN.[Name] AS [Name]
         FROM EntityTypes ET WITH (NOLOCK)
         INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
+        INNER JOIN @IdList IL ON ET.Id = IL.SearchId
         WHERE ET.[Status] IN (1, 3)
         AND ET.EntityType = 2
-        AND ET.Id IN (SELECT LTRIM(RTRIM(value)) FROM STRING_SPLIT(@SearchTerm, ','));
+        OPTION (RECOMPILE);
         RETURN;
     END
 
