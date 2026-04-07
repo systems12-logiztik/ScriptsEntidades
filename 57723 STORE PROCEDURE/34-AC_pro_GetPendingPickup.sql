@@ -1,10 +1,9 @@
 /*
 VERSION     MODIFIEDBY			MODIFIEDDATE    HU      MODIFICATION
-1           Ian Carlos Ortega	2026-01-26      57731   Based on dbo.pro_modulo_DespachoPickup
+1           Ian Ortega			2026-01-26      57731   Based on dbo.pro_modulo_DespachoPickup
 */
 
-ALTER   PROCEDURE [dbo].[AC_pro_GetPendingPickup]
-(
+CREATE OR ALTER PROCEDURE [dbo].[AC_pro_GetPendingPickup] (
 	@NroDocument VARCHAR(32) = NULL,
 	@Po VARCHAR(64) = NULL,
 	@Consignee NVARCHAR(512) = NULL,
@@ -403,3 +402,35 @@ BEGIN
 		EXEC [dbo].[pro_LogError];
 	END CATCH;
 END
+
+/*
+===== EJEMPLOS DE USO =====
+
+-- 1. Prueba basica (sin filtros)
+EXEC AC_pro_GetPendingPickup null, null, null, null, null, null, null, null, 'EMP014', 1, 3, null
+
+EXEC pro_modulo_DespachoPickup null, null, null, null, null, null, null, 'EMP014', 1, 3
+
+-- 3. Prueba con barcode
+EXEC AC_DespachoPickup_ListaPendientesClienteFinal null, null, null, null, null, null, '22333931453', null, 'EMP014', 2, 3, null
+
+-- 4. Prueba con Consignee
+EXEC AC_pro_GetPendingPickup null, null, 'ALLURE FARMS LLC INVENTORY', null, null, null, null, null, 'EMP014', 1, 3, null
+EXEC AC_pro_GetPendingPickup null, null, 'ALF DESINGS WITH ART ', null, null, null, null, null, 'EMP014', 1, 3, null
+
+EXEC pro_modulo_DespachoPickup null, null, 'ALF ALLURE FARMS', null, null, null, null, 'EMP014', 1, 1
+
+-- 4. Prueba con BillTo
+EXEC AC_pro_GetPendingPickup null, null, null, 'ALLURE FARMS LLC INVENTORY', null, null, null, null, 'EMP014', 1, 3, null
+
+-- 5. Prueba combinada
+EXEC AC_DespachoPickup_ListaPendientesClienteFinal null, null, 'ALIS LUXURY BQTS CORP', null, null, null, null, 'LOPEZ ANDRADE MARIA ANABEL', 'EMP014', 1, 3, null
+
+-- 6. Prueba con nro de documento
+EXEC AC_DespachoPickup_ListaPendientesClienteFinal '8552', null, null, null, null, null, null, null, 'EMP014', 1, 3, null
+
+-- 7. Obtener solo 1 registro de un cliente especifico para verificar el cambio
+EXEC AC_DespachoPickup_ListaPendientesClienteFinal null, null, null, null, null, null, null, null, 'EMP014', 1, 3, null
+
+EXEC dbo.AC_DespachoPickup_ListaPendientesClienteFinal @nroDocument=NULL,@po=NULL,@consignee=N'ALF ALLURE FARMS',@billTo=NULL,@status=NULL,@nroManifiesto=NULL,@barcode=NULL,@supplier=NULL,@idEmpresa=N'EMP014',@consulta=1,@fechaDesde=3,@palletLabel=NULL
+*/
