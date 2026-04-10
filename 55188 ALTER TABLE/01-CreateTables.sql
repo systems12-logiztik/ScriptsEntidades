@@ -55,7 +55,6 @@ BEGIN
     (
         Id VARCHAR(16) NOT NULL,
         EntityId VARCHAR(16) NOT NULL,
-        ReferenceId VARCHAR(16),
         [Status] INT NOT NULL,
         EntityType INT NOT NULL,
         Metadata VARCHAR(MAX) NULL,
