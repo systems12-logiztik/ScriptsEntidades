@@ -32,7 +32,6 @@ BEGIN
         END
 
         DECLARE @EntityId VARCHAR(32),
-                @ReferenceId VARCHAR(16),
                 @ErrorMessage NVARCHAR(MAX),
                 @ErrorSeverity INT;
         
@@ -40,34 +39,10 @@ BEGIN
         SELECT TOP 1 @EntityId = i.Id
         FROM inserted i;
 
-        -- LÓGICA 1: Actualizar datos en Clientes cuando se actualiza Entities
-        -- Obtener ReferenceId relacionado a la entidad actualizada (si existe)
-        SELECT TOP 1 @ReferenceId = et.ReferenceId
-        FROM [dbo].[EntityTypes] et WITH (NOLOCK)
-        INNER JOIN inserted i ON et.EntityId = i.Id
-        WHERE et.EntityType = 2
-        AND et.[Status] IN (0, 1);
-
-        -- Solo actualizar Clientes si ReferenceId no es NULL
-        IF @ReferenceId IS NOT NULL
-        BEGIN
-            -- Actualizar los datos principales del cliente con los valores de la entidad actualizada
-            UPDATE c
-            SET
-                c.nombre = i.[Name],
-                c.alias = i.[Name],
-                c.idPais = i.CountryId,
-                c.idEstado = i.SubdivisionId,
-                c.idCiudad = i.CityId,
-                c.tipoCliente = 'CLIENTE',
-                c.direccion = i.Address1,
-                c.codigozip = i.PostalCode,
-                c.fechaCambio = GETDATE(),
-                c.idUsuarioLog = i.ModifiedBy
-            FROM [dbo].[Clientes] c
-            INNER JOIN inserted i ON c.id = @ReferenceId;
-        END
-
+        -- LÓGICA 1: DESHABILITADA
+        -- ReferenceId fue movido de EntityTypes a EntityRelations
+        -- Esta lógica ya no aplica
+        
         -- LÓGICA 2: Actualizar el Alias en EntityRelations cuando cambia el nombre del Consignee
         -- Esto mantiene la consistencia entre Entities/EntityTypes y EntityRelations
         -- Aplica solo a relaciones de tipo Propia (1) y Ship-To (3)

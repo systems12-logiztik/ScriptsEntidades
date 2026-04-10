@@ -168,7 +168,7 @@ BEGIN
 				LEFT OUTER JOIN Transportes subCarrier ON crsT.idEntidad = subCarrier.id 
 				LEFT OUTER JOIN Transportes carrier ON subCarrier.idTransportePrincipal = carrier.id
 				LEFT OUTER JOIN CodigosRelacionSistemas crs ON (itc.codigoCliente = crs.codigo AND crs.idSistemaEntidad = 100 AND crs.tipoEntidad = 'BILLTOCONSIGNEE')
-				LEFT OUTER JOIN v_ClientsEntities vst ON crs.EntityReferenceId = vst.id 
+			LEFT OUTER JOIN v_ClientsEntities vst ON crs.EntityRelationId = vst.id
 				LEFT OUTER JOIN Ciudades cst ON vst.idCiudad=cst.id
 				LEFT OUTER JOIN Estados est ON vst.idEstado=est.id
 				LEFT OUTER JOIN ClientesCarrierCuentas ccc ON vst.id = ccc.EntityTypeId AND carrier.id = ccc.idCarrier
@@ -311,7 +311,7 @@ BEGIN
 				LEFT OUTER JOIN Transportes sc ON crsSubCarrier.idEntidad = sc.id 
 				LEFT OUTER JOIN Transportes carrier  ON sc.idTransportePrincipal = carrier.id
 				LEFT OUTER JOIN CodigosRelacionSistemas crs ON (cb.codigoCliente = crs.codigo AND crs.idSistemaEntidad = 100 AND crs.tipoEntidad = 'BILLTOCONSIGNEE')
-				LEFT OUTER JOIN v_ClientsEntities vst ON crs.EntityReferenceId = vst.id 
+			LEFT OUTER JOIN v_ClientsEntities vst ON crs.EntityRelationId = vst.id
 				LEFT OUTER JOIN Ciudades cst ON vst.idCiudad = cst.id 
 				LEFT OUTER JOIN Estados est ON vst.idEstado = est.id
 				LEFT OUTER JOIN ClientesCarrierCuentas ccc ON vst.id = ccc.EntityTypeId AND carrier.id = ccc.idCarrier

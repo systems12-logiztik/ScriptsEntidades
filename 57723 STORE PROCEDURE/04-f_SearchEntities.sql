@@ -53,7 +53,7 @@ BEGIN
             INSERT INTO @Results
             SELECT 
                 ET.Id,
-                ET.ReferenceId AS IdCliente,
+                NULL AS IdCliente,
                 NULL AS BillToConsignee,
                 NULL AS BillToId,
                 ET.Id AS ConsigneeId,
@@ -113,7 +113,7 @@ BEGIN
         INSERT INTO @Results
         SELECT 
             ET.Id,
-            ET.ReferenceId AS IdCliente,
+            NULL AS IdCliente,
             NULL AS BillToConsignee,
             NULL AS BillToId,
             ET.Id AS ConsigneeId,
@@ -176,7 +176,7 @@ BEGIN
         INSERT INTO @Results
         SELECT 
             ET.Id,
-            ET.ReferenceId AS IdCliente,
+            NULL AS IdCliente,
             NULL AS BillToConsignee,
             NULL AS BillToId,
             ET.Id AS ConsigneeId,
