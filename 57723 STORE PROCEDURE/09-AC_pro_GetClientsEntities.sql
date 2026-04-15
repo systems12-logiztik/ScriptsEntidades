@@ -32,8 +32,21 @@ BEGIN
         -- =============================================================================================
         IF @UserType = 'CONSIGNEE'
         BEGIN
-            SELECT Id, IdCliente, BillToConsigneeId, BillToId, ConsigneeId
-            FROM dbo.f_SearchEntities(@EntityId, 'IdConsignee')
+            SELECT 
+            ER.Id,
+            ER.ReferenceId AS IdCliente,
+            ER.Id AS BillToConsigneeId,
+            ER.EntityTypeId AS BillToId,
+            ER.ChildEntityTypeId AS ConsigneeId, 
+            EN.[Name] AS BillToName,
+            ER.Alias AS [Name]
+            FROM EntityRelations ER WITH (NOLOCK)
+            INNER JOIN EntityTypes ET WITH (NOLOCK) ON ET.Id = ER.EntityTypeId
+            INNER JOIN Entities EN WITH (NOLOCK) ON EN.Id = ET.EntityId
+            WHERE ET.[Status] IN (1, 3)
+            AND ER.[Status] = 1
+            AND ER.SubType = 1
+            AND ER.ChildEntityTypeId = @EntityId
             RETURN
         END
 
@@ -54,7 +67,7 @@ BEGIN
         BEGIN
             SELECT FSE.Id, C.id AS IdCliente, FSE.BillToConsigneeId, FSE.BillToId, FSE.ConsigneeId
             FROM Clientes C WITH (NOLOCK)
-            LEFT JOIN dbo.f_SearchEntities('', 'Consignee') FSE ON C.id = FSE.IdCliente
+            LEFT JOIN dbo.f_SearchEntities('', 'BillTo') FSE ON C.id = FSE.IdCliente
             WHERE C.id = @EntityId
             RETURN
         END
@@ -65,7 +78,7 @@ BEGIN
         BEGIN
             SELECT FSE.Id, GC.IdCliente, FSE.BillToConsigneeId, FSE.BillToId, FSE.ConsigneeId
             FROM GrupoClientes GC WITH (NOLOCK)
-            LEFT JOIN dbo.f_SearchEntities('', 'Consignee') FSE ON GC.IdCliente = FSE.IdCliente
+            LEFT JOIN dbo.f_SearchEntities('', 'BillTo') FSE ON GC.IdCliente = FSE.IdCliente
             WHERE GC.IdGrupoCliente = @EntityId
             RETURN
         END
