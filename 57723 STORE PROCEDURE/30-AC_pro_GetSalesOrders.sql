@@ -1,8 +1,9 @@
 /*     
 VERSION		AUTOR				FECHA			HU			CAMBIO    
 01			Jean Martillo       2026-01-28		57727		Initial code - store procedure based on pro_ObtenerOrdenesDeVenta
+02			Mateo Velasco       2026-04-20		57727		Fix join condition with v_ClientsEntities, consigneeId field
 */    
-CREATE OR ALTER PROCEDURE [dbo].[AC_pro_GetSalesOrders]    
+CREATE OR ALTER   PROCEDURE [dbo].[AC_pro_GetSalesOrders]    
  @FechaIni DATETIME,    
  @FechaFin DATETIME,    
  @IdSistema INT,    
@@ -45,8 +46,8 @@ BEGIN
   INTO #tmp_solicitudes2
   FROM #tmp_solicitudes SOL    
   INNER JOIN GuiasHouseDetalles GHD WITH (NOLOCK,INDEX=PK_GuiasHouseDetalles) ON GHD.id = SOL.idGuiasHouseDetalle    
-  INNER JOIN GuiasHouse GH WITH(NOLOCK) ON GHD.idGuiaHouse = GH.id AND GH.idEmpresa = @IdEmpresa  
-  LEFT JOIN v_ClientsEntities CI ON GH.ConsigneeId = CI.id  
+  INNER JOIN GuiasHouse GH WITH(NOLOCK) ON GHD.idGuiaHouse = GH.id AND GH.idEmpresa = @IdEmpresa
+  LEFT JOIN v_ClientsEntities CI ON GH.ConsigneeId = CI.ConsigneeId 
   OUTER APPLY  (  SELECT TOP 1 BD.nombre, BD.id    
 	  FROM UbicacionPiezas UP    
 	  INNER JOIN Ubicaciones UB WITH(NOLOCK) ON UP.idUbicacion = UB.id    
@@ -202,7 +203,7 @@ BEGIN
 END      
 
 /*    
-execute dbo.AC_pro_GetSalesOrders '25/01/2026 00:00:00', '10/02/2026 00:00:00', 100, 'CARRIER', 'EMP014';
+execute dbo.AC_pro_GetSalesOrders '18/03/2026 00:00:00', '19/03/2026 00:00:00', 100, 'CARRIER', 'EMP014', 'ETY01336';
 execute dbo.AC_pro_GetSalesOrders '22/02/2026 00:00:00', '24/02/2026 00:00:00', 100, 'CARRIER', 'EMP014', 'ETY0000000008684';
 execute dbo.AC_pro_GetSalesOrders '22/02/2026 00:00:00', '24/02/2026 00:00:00', 100, 'CARRIER', 'EMP014', null;
 */ 
