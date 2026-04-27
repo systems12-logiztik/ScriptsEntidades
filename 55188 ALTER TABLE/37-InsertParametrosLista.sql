@@ -17,6 +17,7 @@ IF NOT EXISTS(
 BEGIN 
     DECLARE @idEmpresa VARCHAR(16);
     DECLARE @newId VARCHAR(16);
+	
 
 	--==============================EnvioDocumentosArchivosAdjuntos GLOBAL===============================
  	EXEC dbo.PRO_General_GenerarIdUnico 'ParametrosLista', @IdUnico = @newId OUTPUT;
@@ -383,4 +384,93 @@ BEGIN
 		END
     CLOSE empresa_cursor;
     DEALLOCATE empresa_cursor;
+END
+
+BEGIN
+
+	DECLARE @Codigo VARCHAR(64),
+			@Descripcion VARCHAR(128),
+			@Tipo VARCHAR(32),
+			@Actor VARCHAR(16),
+			@Nota VARCHAR(256),
+			@FechaCambio DATETIME,
+			@Status VARCHAR(32),
+			@Enumerador VARCHAR(64),
+			@DetailDescription VARCHAR(8000),
+			@empresaId VARCHAR(16),
+			@idNew VARCHAR(16);
+
+	SELECT	@Codigo = 'ShiptoDetailLabelType',
+			@Descripcion = 'Permite imprimir una etiqueta adicional para el cliente final',
+			@Tipo = 'CODIGOBARRA',
+			@Actor = 'BILLTO',
+			@Nota = 'This parameter allows you to define whether an additional label should be printed for the Ship-to and which Bill-to � Consignee relationships it applies to.
+					 The configuration is done by selecting the label type and the corresponding relationships.
+					 Configuring all label types is not mandatory.',
+			@FechaCambio = GETDATE(),
+			@Status = 'ACTIVO',
+			@Enumerador = 'ShiptoDetailLabelType',
+			@DetailDescription = '{"description":{"es-US":"Permite imprimir una etiqueta adicional para el cliente final.","en-US":"Allows printing an additional label for the Ship-to."},"detail":{"es-US":"Este par�metro permite imprimir una etiqueta adicional para el Cliente Final (Ship-to) y a qu� relaciones Bill-to � Consignee aplica.<br>La configuraci�n se realiza seleccionando el tipo de etiqueta y las relaciones correspondientes.<br>No es obligatorio parametrizar todas las etiquetas.","en-US":"This parameter allows you to define whether an additional label should be printed for the Ship-to and which Bill-to � Consignee relationships it applies to.<br>The configuration is done by selecting the label type and the corresponding relationships.<br>Configuring all label types is not mandatory."}}'
+
+
+	DECLARE EMP_CURSOR CURSOR FOR
+	SELECT E.Id
+	FROM dbo.Empresas E
+	WHERE [status] = 'ACTIVO'
+
+	OPEN EMP_CURSOR
+	FETCH NEXT FROM EMP_CURSOR INTO @empresaId
+
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+
+		IF NOT EXISTS (
+			SELECT 1
+			FROM dbo.ParametrosLista PL
+			WHERE PL.Codigo = @Codigo
+			AND PL.IdEmpresa = @empresaId
+		)
+		BEGIN
+			EXEC dbo.PRO_General_GenerarIdUnico 
+				'ParametrosLista',
+				@IdUnico = @idNew OUTPUT
+
+			INSERT INTO dbo.ParametrosLista
+			(
+				Id,
+				Codigo,
+				Descripcion,
+				Tipo,
+				Actor,
+				Nota,
+				FechaCambio,
+				[Status],
+				IdEmpresa,
+				TipoActor,
+				Enumerador,
+				DetailDescription
+			)
+			VALUES
+			(
+				@idNew,
+				@Codigo,
+				@Descripcion,
+				@Tipo,
+				@Actor,
+				@Nota,
+				@FechaCambio,
+				@Status,
+				@empresaId,
+				NULL,
+				@Enumerador,
+				@DetailDescription
+			)
+		END
+
+		FETCH NEXT FROM EMP_CURSOR INTO @empresaId
+	END
+
+	CLOSE EMP_CURSOR
+	DEALLOCATE EMP_CURSOR
+
 END
