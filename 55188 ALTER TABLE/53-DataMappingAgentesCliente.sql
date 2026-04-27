@@ -1,6 +1,6 @@
 /*
 VERSION     MODIFIEDBY          MODIFIEDDATE    HU      MODIFICATION
-1           Luchin/Patty/Juan   2025-12-19      64765   Homologación AgentesCliente
+1           Luchin/Patty/Juan   2025-12-19      64765   DataMapping AgentesCliente
 */
 
 DECLARE 
