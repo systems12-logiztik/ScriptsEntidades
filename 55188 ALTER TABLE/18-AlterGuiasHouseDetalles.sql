@@ -1,6 +1,6 @@
 /*
 VERSION     MODIFIEDBY     MODIFIEDDATE    HU          MODIFICATION
-1           Cristhian Cuichan           2025-12-10      55188       Initial Code - Add Columns ConsigneeId and ShipToId into GuiasHouseDetalles 
+1           Cristhian Cuichan           2025-12-10      55188       Initial Code - Add Columns BilltoConsigneeId and ShipToId into GuiasHouseDetalles 
 */
 
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('GuiasHouseDetalles') AND name = 'BilltoConsigneeId')
