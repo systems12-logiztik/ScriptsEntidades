@@ -1,9 +1,8 @@
 /*     
 VERSION		AUTOR				FECHA			HU			CAMBIO    
 01			Jean Martillo       2026-01-28		57727		Initial code - store procedure based on pro_ObtenerOrdenesDeVenta
-02			Mateo Velasco       2026-04-20		57727		Fix join condition with v_ClientsEntities, consigneeId field
 */    
-CREATE OR ALTER   PROCEDURE [dbo].[AC_pro_GetSalesOrders]    
+CREATE OR ALTER PROCEDURE [dbo].[AC_pro_GetSalesOrders]    
  @FechaIni DATETIME,    
  @FechaFin DATETIME,    
  @IdSistema INT,    
@@ -46,7 +45,7 @@ BEGIN
   INTO #tmp_solicitudes2
   FROM #tmp_solicitudes SOL    
   INNER JOIN GuiasHouseDetalles GHD WITH (NOLOCK,INDEX=PK_GuiasHouseDetalles) ON GHD.id = SOL.idGuiasHouseDetalle    
-  INNER JOIN GuiasHouse GH WITH(NOLOCK) ON GHD.idGuiaHouse = GH.id AND GH.idEmpresa = @IdEmpresa
+  INNER JOIN GuiasHouse GH WITH(NOLOCK) ON GHD.idGuiaHouse = GH.id AND GH.idEmpresa = @IdEmpresa  
   LEFT JOIN v_ClientsEntities CI ON GH.ConsigneeId = CI.ConsigneeId 
   OUTER APPLY  (  SELECT TOP 1 BD.nombre, BD.id    
 	  FROM UbicacionPiezas UP    
