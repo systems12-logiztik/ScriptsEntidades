@@ -1,6 +1,6 @@
 /*    
 VERSION		MODIFIEDBY			MODIFIEDDATE	HU				MODIFICATION
-1			Jorge Ortiz			2025-10-04		CT 46760		Initial Code - PrametrosLista: Add level, detailDescription
+1			Jorge Ortiz			2025-10-04		55188			Initial Code - PrametrosLista: Add level, detailDescription
 */
 IF NOT EXISTS (
     SELECT 1 

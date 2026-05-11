@@ -1,6 +1,6 @@
 /*    
 VERSION     MODIFIEDBY          MODIFIEDDATE    HU      MODIFICATION
-1           Jordan Chango       2026-02-13      57733   Initial Code - Add EntityReferenceId column to DocumentosDespachoErrores
+1           Jordan Chango       2026-02-13      55188   Initial Code - Add EntityReferenceId column to DocumentosDespachoErrores
 */
  
 IF NOT EXISTS (

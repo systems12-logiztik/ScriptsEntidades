@@ -1,6 +1,6 @@
 /*
 VERSION     MODIFIEDBY      MODIFIEDDATE    HU      MODIFICATION
-1           Luis Campos     2026-01-22      53095   Script idempotente para insertar cliente N/A
+1           Luis Campos     2026-01-22      55188   Script idempotente para insertar cliente N/A
 */
 
 DECLARE @IdRegistro VARCHAR(32) = 'CLI999999';

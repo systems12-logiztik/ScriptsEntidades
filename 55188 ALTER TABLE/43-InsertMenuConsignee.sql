@@ -1,6 +1,6 @@
 /*
 VERSION     MODIFIEDBY              MODIFIEDDATE    HU          MODIFICATION
-1			Mateo Velasco			2025-06-19      AC-51314    Initial Code: Insert Menu and permissions
+1			Mateo Velasco			2025-06-19      55188       Initial Code: Insert Menu and permissions
 */
 -- Agregar opcion de EDITAR para `Consignatarios`
 DECLARE @IdRegistro VARCHAR(32);

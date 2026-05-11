@@ -1,6 +1,6 @@
 /*
 VERSION     MODIFIEDBY      	  MODIFIEDDATE    HU      MODIFICATION
-1           Cristhian Cuichan     2026-03-25     57724   Create indexes for OrdenesLocales to optimize queries by BillToConsigneeId and ConsigneeId
+1           Cristhian Cuichan     2026-03-25     55188   Create indexes for OrdenesLocales to optimize queries by BillToConsigneeId and ConsigneeId
 */
 
 

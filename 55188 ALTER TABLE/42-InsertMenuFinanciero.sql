@@ -1,6 +1,6 @@
 /*
 VERSION		MODIFIEDBY			MODIFIEDDATE	HU				MODIFICATION
-1			JOSE GUERRA			2025-05-01		CT 49428		Initial Code - Add Permissions to Menu
+1			JOSE GUERRA			2025-05-01		55188			Initial Code - Add Permissions to Menu
 */
 
 -- Obtener el id del menu `Bill-to`

@@ -1,6 +1,6 @@
 /*
 VERSION     MODIFIEDBY      MODIFIEDDATE    HU      MODIFICATION
-1           Jair Gomez     2026-02-05      57731   Update COSTUMER to CONSIGNEE in subject and body
+1           Jair Gomez     2026-02-05      55188   Update COSTUMER to CONSIGNEE in subject and body
 */
 
 IF EXISTS (

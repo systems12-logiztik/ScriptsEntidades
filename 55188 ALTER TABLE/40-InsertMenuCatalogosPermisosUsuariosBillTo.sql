@@ -1,6 +1,6 @@
 /*
 VERSION		MODIFIEDBY			MODIFIEDDATE	HU			MODIFICATION
-1			JOSE GUERRA			2025-04-23		46759		LAG-CT-004 Catálogo de Bill-to: pestaña Usuarios
+1			JOSE GUERRA			2025-04-23		55188		LAG-CT-004 Catálogo de Bill-to: pestaña Usuarios
 */
 
 -- Obtener el id del menu `Bill-to`

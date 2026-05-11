@@ -1,6 +1,6 @@
 /*
 VERSION     MODIFIEDBY              MODIFIEDDATE    HU          MODIFICATION
-1           Jorge Ortiz             2025-11-06      55390       Initial Code - New secuencial for table EntityRelations
+1           Jorge Ortiz             2025-11-06      55188       Initial Code - New secuencial for table EntityRelations
 */
 IF NOT EXISTS (
     SELECT 1 

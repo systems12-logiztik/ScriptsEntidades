@@ -1,6 +1,6 @@
 /*
 VERSION		MODIFIEDBY			MODIFIEDDATE	HU					MODIFICATION
-1			MATEO VELASCO		2025-05-26		46761				LAG-CT-004 Bill-to Catalog: Consignee function
+1			MATEO VELASCO		2025-05-26		55188				LAG-CT-004 Bill-to Catalog: Consignee function
 */
  
 -- Obtain id from Bill-To menu

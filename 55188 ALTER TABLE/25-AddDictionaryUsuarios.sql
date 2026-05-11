@@ -1,6 +1,6 @@
 /*    
 VERSION		MODIFIEDBY					MODIFIEDDATE	HU				MODIFICATION
-1			Cristhian Cuichan			2025-03-26		63742			Initial Code - Add addextendedproperty for EntityType field in Usuarios table
+1			Cristhian Cuichan			2025-03-26		55188			Initial Code - Add addextendedproperty for EntityType field in Usuarios table
 */
 DECLARE @tabla VARCHAR(32) = 'Usuarios',
 		@columnEntityType VARCHAR(32) = 'EntityType',

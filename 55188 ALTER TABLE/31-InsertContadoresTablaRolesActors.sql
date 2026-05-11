@@ -1,6 +1,6 @@
 /*    
 VERSION		MODIFIEDBY		MODIFIEDDATE	HU			MODIFICATION
-1			Jorge Ortiz		2025-11-10		CT 55390	Initial Code - New secuencial for table RolesActors
+1			Jorge Ortiz		2025-11-10		55188		Initial Code - New secuencial for table RolesActors
 */
 IF NOT EXISTS (
     SELECT TOP 1 1

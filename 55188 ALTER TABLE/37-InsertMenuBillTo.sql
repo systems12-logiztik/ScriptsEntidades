@@ -1,6 +1,6 @@
 /*
 VERSION     MODIFIEDBY              MODIFIEDDATE    HU          MODIFICATION
-1           Pierre Quitiaquez       2024-11-21      44629       LAG-CT-001​ Nuevo menu catálogo de Bill-to (back-end)
+1           Pierre Quitiaquez       2024-11-21      55188       LAG-CT-001​ Nuevo menu catálogo de Bill-to (back-end)
 */
 DECLARE @IdRegistro VARCHAR(32);
 DECLARE @IdRegistroListar VARCHAR(32);

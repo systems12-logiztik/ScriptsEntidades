@@ -1,6 +1,6 @@
 /*    
 VERSION		MODIFIEDBY			MODIFIEDDATE	HU			MODIFICATION
-1			Jorge Ortiz			2025-05-20		CT 44730	Initial Code - Add new Menus for Billto-Contacts
+1			Jorge Ortiz			2025-05-20		55188		Initial Code - Add new Menus for Billto-Contacts
 */
 DECLARE @IdRegistro VARCHAR(32),
 		@newId VARCHAR(32)

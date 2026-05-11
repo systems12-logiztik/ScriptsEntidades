@@ -1,6 +1,6 @@
 /* 
 VERSION		MODIFIEDBY			MODIFIEDDATE	HU					MODIFICATION
-1			Jorge Ortiz			2025-04-22		CT 46760			Initial Code - Add new ParametersList for all companies
+1			Jorge Ortiz			2025-04-22		55188				Initial Code - Add new ParametersList for all companies
 2			Jorge Ortiz			2025-11-10		LAG-CT-013 53071	Initial Code - Add new ParametersList for all companies
 */
 IF NOT EXISTS(
@@ -17,7 +17,6 @@ IF NOT EXISTS(
 BEGIN 
     DECLARE @idEmpresa VARCHAR(16);
     DECLARE @newId VARCHAR(16);
-	
 
 	--==============================EnvioDocumentosArchivosAdjuntos GLOBAL===============================
  	EXEC dbo.PRO_General_GenerarIdUnico 'ParametrosLista', @IdUnico = @newId OUTPUT;

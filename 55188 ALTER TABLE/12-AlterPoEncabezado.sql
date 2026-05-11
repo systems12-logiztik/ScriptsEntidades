@@ -1,6 +1,6 @@
 /*
 VERSION     MODIFIEDBY					MODIFIEDDATE    HU          MODIFICATION
-1           Cristhian Cuichan           2025-12-10      53095       Initial Code - Add Columns ConsigneeId and BillToConsigneeId into PoEncabezado 
+1           Cristhian Cuichan           2025-12-10      55188       Initial Code - Add Columns ConsigneeId and BillToConsigneeId into PoEncabezado 
 */
 
 

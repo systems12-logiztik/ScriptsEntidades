@@ -1,6 +1,6 @@
 /*
 VERSION     MODIFIEDBY              MODIFIEDDATE    HU          MODIFICATION
-1           Marlon Pizarro          2025-08-28      55641       LAG-CT-001​ Entities catalog menu
+1           Marlon Pizarro          2025-08-28      55188       LAG-CT-001​ Entities catalog menu
 */
 DECLARE @IdRegistro VARCHAR(32);
 IF NOT EXISTS (

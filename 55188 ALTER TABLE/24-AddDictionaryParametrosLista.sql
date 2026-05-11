@@ -1,6 +1,6 @@
 /*    
 VERSION		MODIFIEDBY		MODIFIEDDATE	HU				MODIFICATION
-1			Jorge Ortiz		2025-04-10		CT 46760		Initial Code - Add addextendedproperty for DetailDescription
+1			Jorge Ortiz			2025-04-10		55188			Initial Code - Add addextendedproperty for DetailDescription
 */
 DECLARE @tabla VARCHAR(32) = 'ParametrosLista',
 		@columnDetailDescription VARCHAR(32) = 'DetailDescription',

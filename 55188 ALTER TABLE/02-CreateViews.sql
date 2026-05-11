@@ -1,6 +1,6 @@
 /*
 VERSION     MODIFIEDBY      MODIFIEDDATE    HU      MODIFICATION
-1           Luis Campos     2026-01-22      53095   Create unified views for Entities model
+1           Luis Campos     2026-01-22      55188   Create unified views for Entities model
 */
 
 CREATE OR ALTER VIEW dbo.v_ClientsEntities

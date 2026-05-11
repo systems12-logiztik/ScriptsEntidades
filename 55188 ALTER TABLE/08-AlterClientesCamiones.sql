@@ -1,6 +1,6 @@
 /*    
 VERSION		MODIFIEDBY			MODIFIEDDATE	HU		MODIFICATION
-1		    Jorge Ortiz			2025-11-10	    55390	Initial Code - Change idCliente to null and add EntityTypeId column to ClientesCamiones table with FK to EntityTypes
+1		    Jorge Ortiz			2025-11-10	    55188	Initial Code - Change idCliente to null and add EntityTypeId column to ClientesCamiones table with FK to EntityTypes
 */
 IF NOT EXISTS (
     SELECT 1 
@@ -12,10 +12,6 @@ IF NOT EXISTS (
 BEGIN
     ALTER TABLE [dbo].[ClientesCamiones]
     ADD [EntityTypeId] VARCHAR(16) NULL
-		CONSTRAINT [FK_TruckCustomers_EntityTypes] 
-        FOREIGN KEY ([EntityTypeId]) 
-        REFERENCES [dbo].[EntityTypes]([Id])
-        NOT FOR REPLICATION
     
     PRINT 'Column EntityTypeId added to AgentesCliente table successfully.'
 END
