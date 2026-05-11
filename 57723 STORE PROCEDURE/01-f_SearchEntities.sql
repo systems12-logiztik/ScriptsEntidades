@@ -195,3 +195,142 @@ BEGIN
     RETURN;
 END
 GO
+
+-- =====================================================
+-- EJEMPLOS DE USO: f_SearchEntities
+-- =====================================================
+
+-- EJEMPLO 1: Obtener TODOS los BillTo (sin búsqueda)
+/*
+SELECT 
+    Id,
+    IdCliente,
+    BillToId,
+    BillToName,
+    [Name] AS BillToAlias
+FROM dbo.f_SearchEntities('', 'BillTo')
+ORDER BY BillToName;
+*/
+
+-- EJEMPLO 2: Buscar BillTo por NOMBRE (patrón parcial)
+/*
+SELECT 
+    Id,
+    IdCliente,
+    BillToId,
+    BillToName,
+    [Name] AS BillToAlias
+FROM dbo.f_SearchEntities('ALIANZA', 'BillTo')
+ORDER BY BillToName;
+*/
+
+-- EJEMPLO 3: Obtener TODOS los Consignee (sin búsqueda)
+/*
+SELECT 
+    Id AS ConsigneeId,
+    [Name] AS ConsigneeName,
+    BillToId,
+    BillToName
+FROM dbo.f_SearchEntities('', 'Consignee')
+ORDER BY [Name];
+*/
+
+-- EJEMPLO 4: Buscar Consignee por NOMBRE
+/*
+SELECT 
+    Id AS ConsigneeId,
+    [Name] AS ConsigneeName,
+    BillToId,
+    BillToName
+FROM dbo.f_SearchEntities('MEXICO', 'Consignee')
+ORDER BY [Name];
+*/
+
+-- EJEMPLO 5: Buscar BillTo por IDs específicos (lista separada por coma)
+/*
+SELECT 
+    Id,
+    IdCliente,
+    BillToId,
+    BillToName,
+    [Name] AS BillToAlias
+FROM dbo.f_SearchEntities('ET001,ET002,ET003', 'IdBillTo')
+ORDER BY BillToName;
+*/
+
+-- EJEMPLO 6: Buscar Consignee por IDs específicos
+/*
+SELECT 
+    Id AS ConsigneeId,
+    [Name] AS ConsigneeName,
+    BillToId
+FROM dbo.f_SearchEntities('ET010,ET011,ET012', 'IdConsignee')
+ORDER BY [Name];
+*/
+
+-- EJEMPLO 7: Combinar con GuiasHouse
+/*
+SELECT TOP 50
+    gh.id,
+    gh.house,
+    gh.idCliente,
+    se.[Name] AS ConsigneeName,
+    se.BillToName
+FROM GuiasHouse gh
+INNER JOIN dbo.f_SearchEntities('', 'Consignee') se 
+    ON CAST(gh.idCliente AS VARCHAR(16)) = se.ConsigneeId
+WHERE gh.idEmpresa = 'EMP014'
+ORDER BY gh.house DESC;
+*/
+
+-- EJEMPLO 8: Contar resultados por tipo
+/*
+SELECT 
+    'BillTo' AS TipoCliente,
+    COUNT(*) AS TotalResultados
+FROM dbo.f_SearchEntities('', 'BillTo')
+
+UNION ALL
+
+SELECT 
+    'Consignee' AS TipoCliente,
+    COUNT(*) AS TotalResultados
+FROM dbo.f_SearchEntities('', 'Consignee');
+*/
+
+-- EJEMPLO 9: Búsqueda con validación usando variables
+/*
+DECLARE @SearchTerm VARCHAR(100) = 'NEW YORK';
+DECLARE @SearchType VARCHAR(16) = 'Consignee';
+
+SELECT 
+    Id,
+    IdCliente,
+    BillToId,
+    ConsigneeId,
+    BillToName,
+    [Name]
+FROM dbo.f_SearchEntities(@SearchTerm, @SearchType)
+ORDER BY [Name];
+*/
+
+-- =====================================================
+-- TIPOS DE BÚSQUEDA DISPONIBLES
+-- =====================================================
+/*
+SEARCHTYPE              DESCRIPCIÓN                    PARÁMETRO
+----------              -----------                    ---------
+'BillTo'                Factura a (remitente)          Patrón o vacío
+'Consignee'             Destinatario                   Patrón o vacío
+'ShipTo'                Alias de Consignee             Patrón o vacío
+'IdBillTo'              Buscar por IDs de BillTo       IDs separados por coma
+'IdConsignee'           Buscar por IDs de Consignee    IDs separados por coma
+
+EJEMPLOS DE PATRÓN:
+- ''                    = retorna todos
+- 'ALIANZA'             = contiene "ALIANZA"
+- '%MEXICO%'            = contiene "MEXICO"
+- 'NEW%'                = comienza con "NEW"
+- '%CITY'               = termina con "CITY"
+*/
+
