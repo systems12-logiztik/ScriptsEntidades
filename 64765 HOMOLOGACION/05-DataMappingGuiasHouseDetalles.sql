@@ -13,28 +13,28 @@ IF OBJECT_ID('tempdb..#GuiasHouseDetallesUpdate') IS NOT NULL DROP TABLE #GuiasH
 
 CREATE TABLE #GuiasHouseDetallesUpdate (
     id UNIQUEIDENTIFIER,
-    ConsigneeId VARCHAR(16) NULL,
+    BilltoConsigneeId VARCHAR(16) NULL,
     ShipToId VARCHAR(16) NULL,
     Nro INT IDENTITY(1,1)
 )
 
 CREATE CLUSTERED INDEX IDX_GuiasHouseDetalle ON #GuiasHouseDetallesUpdate (id)
 
-INSERT INTO #GuiasHouseDetallesUpdate (id, ConsigneeId, ShipToId)
+INSERT INTO #GuiasHouseDetallesUpdate (id, BilltoConsigneeId, ShipToId)
 SELECT 
     ghd.id,
-    erc.ChildEntityTypeId,
+    erf.id,
     erf.ChildEntityTypeId
 FROM GuiasHouseDetalles ghd WITH (NOLOCK)
-LEFT JOIN EntityRelations erc WITH (NOLOCK) ON erc.ReferenceId = ghd.idClienteConsignee
 LEFT JOIN EntityRelations erf WITH (NOLOCK) ON erf.ReferenceId = ghd.idClienteFinal
-WHERE erc.id IS NOT NULL AND erf.id IS NOT NULL
-AND (ghd.ConsigneeId IS NULL OR ghd.ShipToId IS NULL) -- Solo procesar si alguno es NULL
+WHERE
+erf.id IS NOT NULL
+AND (ghd.BilltoConsigneeId IS NULL OR ghd.ShipToId IS NULL) -- Solo procesar si alguno es NULL
 
 SELECT @TotalRecords = @@ROWCOUNT
 
 INSERT INTO administracion_db..DBA_LogDepuracion
-SELECT GETDATE(),'GuiasHouseDetalles','INICIO ACTUALIZACI�N',@TotalRecords,GETDATE()
+SELECT GETDATE(),'GuiasHouseDetalles','INICIO ACTUALIZACIÓN',@TotalRecords,GETDATE()
 
 WHILE @RowStart <= @TotalRecords
 BEGIN
@@ -43,15 +43,15 @@ BEGIN
     BEGIN TRY
         BEGIN TRANSACTION
         
-		UPDATE ghd WITH (ROWLOCK)
-		SET ghd.ConsigneeId = ISNULL(ghd.ConsigneeId, tmp.ConsigneeId),
-            ghd.ShipToId = ISNULL(ghd.ShipToId, tmp.ShipToId)		
-		FROM #GuiasHouseDetallesUpdate tmp WITH (NOLOCK)
-		INNER JOIN GuiasHouseDetalles ghd WITH (ROWLOCK) ON ghd.id = tmp.id 
+  UPDATE ghd WITH (ROWLOCK)
+  SET ghd.BilltoConsigneeId = ISNULL(ghd.BilltoConsigneeId, tmp.BilltoConsigneeId),
+            ghd.ShipToId = ISNULL(ghd.ShipToId, tmp.ShipToId)  
+  FROM #GuiasHouseDetallesUpdate tmp WITH (NOLOCK)
+  INNER JOIN GuiasHouseDetalles ghd WITH (ROWLOCK) ON ghd.id = tmp.id 
         WHERE tmp.Nro BETWEEN @RowStart AND @RowEnd
         
         INSERT INTO administracion_db..DBA_LogDepuracion
-		SELECT GETDATE(),'GuiasHouseDetalles','Lote ' + CAST(@RowStart AS VARCHAR(8)) + '-' + CAST(@RowEnd AS VARCHAR(8)),@@ROWCOUNT,GETDATE()
+  SELECT GETDATE(),'GuiasHouseDetalles','Lote ' + CAST(@RowStart AS VARCHAR(8)) + '-' + CAST(@RowEnd AS VARCHAR(8)),@@ROWCOUNT,GETDATE()
         
         COMMIT TRANSACTION
 
@@ -63,7 +63,7 @@ BEGIN
         ROLLBACK TRANSACTION
         SELECT @ErrorCount = @ErrorCount + 1
         
-		-- Intentar de nuevo con lote m�s peque�o progresivamente
+  -- Intentar de nuevo con lote m�s peque�o progresivamente
         IF @BatchSize > 500
         BEGIN
             SELECT @BatchSize = CAST(@BatchSize * 0.8 AS INT)
