@@ -69,7 +69,7 @@ BEGIN
 		INNER JOIN [Exportadores] AS EX	WITH(NOLOCK) ON GH.[idExportador] = EX.[id]
 		INNER JOIN [v_ClientsEntities] AS CCO		ON GH.ConsigneeId = CCO.[Id]
 		INNER JOIN [v_ClientsEntities] AS CF		ON [x].ShipToId = CF.[Id]
-		INNER JOIN [v_ClientsEntities] AS COG		ON [x].ConsigneeId = COG.[Id]
+		INNER JOIN [v_ClientsEntities] AS COG		ON [x].BilltoConsigneeId = COG.[Id]
 		INNER JOIN (
 			SELECT [w].[id], [w].[nombre], [w].[nombreIngles]
 			FROM [DetalleMercancias] AS [w] WITH(NOLOCK)
@@ -156,7 +156,7 @@ BEGIN
 		INNER JOIN [Exportadores] AS EX	WITH(NOLOCK) ON GH.[idExportador] = EX.[id]
 		INNER JOIN [v_ClientsEntities] AS CCO		ON GH.ConsigneeId = CCO.[Id]
 		INNER JOIN [v_ClientsEntities] AS CF		ON [x].ShipToId = CF.[Id]
-		INNER JOIN [v_ClientsEntities] AS COG		ON [x].ConsigneeId = COG.[Id]
+		INNER JOIN [v_ClientsEntities] AS COG		ON [x].BilltoConsigneeId = COG.[Id]
 		INNER JOIN (
 			SELECT [w].[id], [w].[nombre], [w].[nombreIngles]
 			FROM [DetalleMercancias] AS [w] WITH(NOLOCK)
