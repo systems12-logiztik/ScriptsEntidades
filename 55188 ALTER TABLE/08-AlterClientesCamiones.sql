@@ -13,10 +13,10 @@ BEGIN
     ALTER TABLE [dbo].[ClientesCamiones]
     ADD [EntityTypeId] VARCHAR(16) NULL
     
-    PRINT 'Column EntityTypeId added to AgentesCliente table successfully.'
+    PRINT 'Column EntityTypeId added to ClientesCamiones table successfully.'
 END
 ELSE
 BEGIN
-    PRINT 'Column EntityTypeId already exists in AgentesCliente table.'
+    PRINT 'Column EntityTypeId already exists in ClientesCamiones table.'
 END
 
