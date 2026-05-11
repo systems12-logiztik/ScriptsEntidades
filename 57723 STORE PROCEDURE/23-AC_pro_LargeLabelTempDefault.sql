@@ -1,6 +1,6 @@
 /*
 VERSION		MODIFIEDBY			MODIFIEDDATE	  HU			 MODIFICATION
-1			Fernando Ordo�ez	2026-01-26		  57725			 Initial code base on pro_EtiquetaGrandeTempDefaul
+1			Fernando Ordoñez	2026-01-26		  57725			 Initial code base on pro_EtiquetaGrandeTempDefault
 */
 CREATE  OR ALTER PROCEDURE [dbo].[AC_pro_LargeLabelTempDefault] (
 	@codigos AS XML,
@@ -125,13 +125,13 @@ BEGIN
 
 				IIF((SELECT TOP 1 valor FROM ParametrosCatalogos pc
 						INNER JOIN ParametrosLista pl ON pc.idParametroLista = pl.id
-					WHERE pc.idEntidad = g.ConsigneeId AND pl.idEmpresa = g.idEmpresa AND pl.codigo = 'TipoServicio') = 'COMERCIALIZADORA',
+					WHERE pc.IdEntidad = g.BillToConsigneeId AND pl.idEmpresa = g.idEmpresa AND pl.codigo = 'TipoServicio') = 'COMERCIALIZADORA',
 						vcd.nombre,
 				IIF (vst.id IS NOT NULL, IIF(vst.Nombre IS NULL, vst.BillToName, vst.Nombre), IIF(vcd.Nombre IS NULL, vcd.BillToName, vcd.Nombre))),
 			
 				IIF((SELECT TOP 1 valor FROM ParametrosCatalogos pc
 						INNER JOIN ParametrosLista pl ON pc.idParametroLista = pl.id
-					WHERE pc.idEntidad = g.ConsigneeId AND pl.idEmpresa = g.idEmpresa AND pl.codigo = 'TipoServicio') = 'COMERCIALIZADORA',
+					WHERE pc.IdEntidad = g.BillToConsigneeId AND pl.idEmpresa = g.idEmpresa AND pl.codigo = 'TipoServicio') = 'COMERCIALIZADORA',
 			
 				CONCAT(SUBSTRING(ccd.nombre, 0, 16) + ' ', ecd.codigoISO, ISNULL(', ' + vcd.codigozip, '')),
 				CASE WHEN vst.id IS NOT NULL 
@@ -145,7 +145,7 @@ BEGIN
 				NULL, --[informacionCodigoQr]
 				bd.Nombre,
 				0,
-				--obtenci�n de codigo de barra de m�s de 11 d�gitos si existe
+				--obtención de codigo de barra de más de 11 dígitos si existe
 				(SELECT TOP 1 codInfo.codigoBarraEntidad FROM CodigosDeBarrasInfoAdicional AS codInfo 
 					WHERE codInfo.codigoBarra=itc.codigoPieza
 					ORDER BY codInfo.fechaCreacion DESC) AS codigoBarraGrande,
@@ -155,7 +155,7 @@ BEGIN
 				Guias g WITH (NOLOCK)
 				INNER JOIN Puertos po ON po.id = g.idPuertoOrigen
 				INNER JOIN Puertos pd ON pd.id = g.idPuertoDestino
-				INNER JOIN v_ClientsEntities vcd ON g.ConsigneeId= vcd.id
+				INNER JOIN v_ClientsEntities vcd ON g.BillToConsigneeId= vcd.id
 				INNER JOIN Ciudades ccd ON vcd.idCiudad = ccd.id
 				INNER JOIN Estados ecd ON vcd.idEstado = ecd.id
 				INNER JOIN Coordinaciones coo WITH (NOLOCK) ON g.id =coo.idGuia
@@ -168,7 +168,7 @@ BEGIN
 				LEFT OUTER JOIN Transportes subCarrier ON crsT.idEntidad = subCarrier.id 
 				LEFT OUTER JOIN Transportes carrier ON subCarrier.idTransportePrincipal = carrier.id
 				LEFT OUTER JOIN CodigosRelacionSistemas crs ON (itc.codigoCliente = crs.codigo AND crs.idSistemaEntidad = 100 AND crs.tipoEntidad = 'BILLTOCONSIGNEE')
-			LEFT OUTER JOIN v_ClientsEntities vst ON crs.EntityRelationId = vst.id
+				LEFT OUTER JOIN v_ClientsEntities vst ON crs.EntityRelationId = vst.id 
 				LEFT OUTER JOIN Ciudades cst ON vst.idCiudad=cst.id
 				LEFT OUTER JOIN Estados est ON vst.idEstado=est.id
 				LEFT OUTER JOIN ClientesCarrierCuentas ccc ON vst.id = ccc.EntityTypeId AND carrier.id = ccc.idCarrier
@@ -288,7 +288,7 @@ BEGIN
 				NULL, --[informacionCodigoQr]
 				bd.nombre,
 				0,
-				--obtenci�n de codigo de barra de m�s de 11 d�gitos si existe
+				--obtención de codigo de barra de más de 11 dígitos si existe
 				(SELECT TOP 1 codInfo.codigoBarraEntidad FROM CodigosDeBarrasInfoAdicional AS codInfo 
 					WHERE codInfo.codigoBarra=cb.codigoBarra
 					ORDER BY codInfo.fechaCreacion DESC) AS codigoBarraGrande,
@@ -298,7 +298,7 @@ BEGIN
 				Guias g WITH (NOLOCK)
 				INNER JOIN Puertos po ON g.idPuertoOrigen = po.id
 				INNER JOIN Puertos pd ON g.idPuertoDestino = pd.id
-				INNER JOIN v_ClientsEntities vcd ON g.ConsigneeId = vcd.id
+				INNER JOIN v_ClientsEntities vcd ON g.BillToConsigneeId = vcd.id
 				INNER JOIN Ciudades ccd ON vcd.idCiudad = ccd.id
 				INNER JOIN Estados ecd ON vcd.idEstado = ecd.id
 				INNER JOIN Coordinaciones co WITH (NOLOCK) ON g.id = co.idGuia
@@ -311,7 +311,7 @@ BEGIN
 				LEFT OUTER JOIN Transportes sc ON crsSubCarrier.idEntidad = sc.id 
 				LEFT OUTER JOIN Transportes carrier  ON sc.idTransportePrincipal = carrier.id
 				LEFT OUTER JOIN CodigosRelacionSistemas crs ON (cb.codigoCliente = crs.codigo AND crs.idSistemaEntidad = 100 AND crs.tipoEntidad = 'BILLTOCONSIGNEE')
-			LEFT OUTER JOIN v_ClientsEntities vst ON crs.EntityRelationId = vst.id
+				LEFT OUTER JOIN v_ClientsEntities vst ON crs.EntityRelationId = vst.id 
 				LEFT OUTER JOIN Ciudades cst ON vst.idCiudad = cst.id 
 				LEFT OUTER JOIN Estados est ON vst.idEstado = est.id
 				LEFT OUTER JOIN ClientesCarrierCuentas ccc ON vst.id = ccc.EntityTypeId AND carrier.id = ccc.idCarrier
@@ -427,7 +427,7 @@ BEGIN
 				NULL, --[informacionCodigoQr]
 				b.nombre,
 				ghd.impresion,
-				--obtenci�n de codigo de barra de m�s de 11 d�gitos si existe
+				--obtención de codigo de barra de más de 11 dígitos si existe
 				(SELECT TOP 1 codInfo.codigoBarraEntidad FROM CodigosDeBarrasInfoAdicional codInfo 
 					WHERE codInfo.codigoBarra=ghd.codigoBarra
 					ORDER BY codInfo.fechaCreacion DESC) AS codigoBarraGrande,
@@ -441,7 +441,7 @@ BEGIN
 				INNER JOIN Ciudades cd ON gh.idCiudadPuertoDestino=cd.id
 				INNER JOIN Exportadores ex ON gh.idExportador=ex.id
 				INNER JOIN Bodegas b ON gh.idBodega=b.id
-				INNER JOIN v_ClientsEntities vcd ON gh.ConsigneeId = vcd.id
+				INNER JOIN v_ClientsEntities vcd ON ISNULL(gh.ConsigneeId, gh.BilltoConsigneeId) = vcd.id
 				INNER JOIN Ciudades ccd ON vcd.idCiudad=ccd.id
 				INNER JOIN Estados ecd ON vcd.idEstado=ecd.id
 				LEFT OUTER JOIN ProgramacionCarrier pc WITH (NOLOCK) ON ghd.id=pc.idGuiaHouseDetalle
