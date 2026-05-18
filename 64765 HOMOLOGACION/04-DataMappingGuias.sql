@@ -14,21 +14,19 @@ IF OBJECT_ID('tempdb..#GuiasUpdate') IS NOT NULL DROP TABLE #GuiasUpdate
 CREATE TABLE #GuiasUpdate (
     id VARCHAR(36),
     BilltoConsigneeId VARCHAR(16) NULL,
-    ConsigneeId VARCHAR(16) NULL,
     Nro INT IDENTITY(1,1)
 )
 
 CREATE CLUSTERED INDEX IDX_Guias ON #GuiasUpdate (id)
 
-INSERT INTO #GuiasUpdate (id, BilltoConsigneeId, ConsigneeId)
+INSERT INTO #GuiasUpdate (id, BilltoConsigneeId)
 SELECT 
     g.id,
-    er.Id,
-    er.ChildEntityTypeId
+    er.Id
 FROM Guias g WITH (NOLOCK)
 LEFT JOIN EntityRelations er WITH (NOLOCK) ON er.ReferenceId = g.idCliente
 WHERE er.id IS NOT NULL
-AND (g.BilltoConsigneeId IS NULL OR g.ConsigneeId IS NULL) -- Solo procesar si alguno es NULL
+AND (g.BilltoConsigneeId IS NULL) -- Solo procesar si alguno es NULL
 
 SELECT @TotalRecords = @@ROWCOUNT
 
@@ -43,8 +41,7 @@ BEGIN
         BEGIN TRANSACTION
         
         UPDATE g WITH (ROWLOCK)
-        SET g.BilltoConsigneeId = ISNULL(g.BilltoConsigneeId, tmp.BilltoConsigneeId),
-            g.ConsigneeId = ISNULL(g.ConsigneeId, tmp.ConsigneeId)
+        SET g.BilltoConsigneeId = ISNULL(g.BilltoConsigneeId, tmp.BilltoConsigneeId)
         FROM #GuiasUpdate tmp WITH (NOLOCK)
         INNER JOIN Guias g WITH (ROWLOCK) ON g.id = tmp.id 
         WHERE tmp.Nro BETWEEN @RowStart AND @RowEnd
