@@ -18,7 +18,8 @@ BEGIN
 
 	CREATE TABLE #ConsigneesSelected (
 		id VARCHAR(16) PRIMARY KEY,
-		nombre VARCHAR(512)
+		nombre VARCHAR(512),
+		BillToConsigneeId VARCHAR(16)
 	)
 
 	CREATE TABLE #ParametrosInvoice (
@@ -106,9 +107,10 @@ BEGIN
 	SELECT TRIM(VALUE) FROM STRING_SPLIT(@IdsConsignees, ',')
 
 	UPDATE #ConsigneesSelected
-	SET nombre = VCE.nombre
+	SET nombre = VCE.nombre,
+		BillToConsigneeId = VCE.Id
 	FROM #ConsigneesSelected CS
-	INNER JOIN v_ClientsEntities VCE WITH (NOLOCK) ON VCE.ConsigneeId = CS.id
+	INNER JOIN v_ClientsEntities VCE WITH (NOLOCK) ON VCE.Id = CS.id
 
 	INSERT INTO #ParametrosInvoice
 	SELECT valor, referencia, id
@@ -137,7 +139,7 @@ BEGIN
 		tipoRegistro = @TipoCargoFlete,
 		invoiceDate = GC.fechaEmbarque,
 		invoice = IV.verifiedInvoice,
-		idConsignatario = GD.ConsigneeId,
+		idConsignatario = CS.id,
 		consignatario = CS.nombre,
 		origin = CI.nombre,
 		mawb = GC.nroGuia,
@@ -154,7 +156,7 @@ BEGIN
 	INNER JOIN Guias GD WITH (NOLOCK) ON GC.id = GD.idGuiaConsolidada
 	INNER JOIN InvoicesPeachtree IV WITH (NOLOCK) ON IV.idGuiaDistribucion = GD.id
 	INNER JOIN #ParametrosInvoice PA ON PA.id = IV.idParametroInvoice
-	INNER JOIN #ConsigneesSelected CS ON CS.id = GD.ConsigneeId
+	INNER JOIN #ConsigneesSelected CS ON CS.BillToConsigneeId = GD.BillToConsigneeId
 	INNER JOIN Coordinaciones CO WITH (NOLOCK) ON CO.idGuia = GD.id
 	INNER JOIN Exportadores EX WITH (NOLOCK) ON EX.id = CO.idExportador
 	INNER JOIN Puertos PU WITH (NOLOCK) ON PU.id = GD.idPuertoOrigen
@@ -182,7 +184,7 @@ BEGIN
 		tipoRegistro = @TipoCargoGuia,
 		invoiceDate = GC.fechaEmbarque,
 		invoice = IV.verifiedInvoice,
-		idConsignatario = GD.ConsigneeId,
+		idConsignatario = CS.id,
 		consignatario = CS.nombre,
 		origin = CI.nombre,
 		mawb = GC.nroGuia,
@@ -196,7 +198,7 @@ BEGIN
 	INNER JOIN InvoicesPeachtree IV WITH (NOLOCK) ON IV.idGuia = GC.id
 	INNER JOIN #ParametrosInvoice PA WITH (NOLOCK) ON PA.id = IV.idParametroInvoice
 	INNER JOIN Guias GD WITH (NOLOCK) ON IV.idGuiaDistribucion = GD.id
-	INNER JOIN #ConsigneesSelected CS ON CS.id = GD.ConsigneeId
+	INNER JOIN #ConsigneesSelected CS ON CS.BillToConsigneeId = GD.BillToConsigneeId
 	INNER JOIN Puertos PU WITH (NOLOCK) ON PU.id = GD.idPuertoOrigen
 	INNER JOIN Ciudades CI WITH (NOLOCK) ON CI.id = PU.idCiudad
 	WHERE GC.fechaEmbarque BETWEEN @StartDate AND @EndDate
@@ -411,7 +413,7 @@ END
 /*
 ===== EJEMPLOS DE USO =====
 
--- 1. Prueba b·sica con un consignatario
+-- 1. Prueba b√°sica con un consignatario
 
 EXEC AC_pro_GetAccountingAnalyticsReports
 	'ETY0000000008142',
