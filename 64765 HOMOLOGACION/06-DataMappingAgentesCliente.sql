@@ -9,9 +9,10 @@ DECLARE @BatchSize INT = 5000
 	,@RowStart INT = 1
 	,@RowEnd INT = 0
 	,
-	-- Rango de fechas a procesar (ajustar antes de cada ejecución)
-	@FechaInicio DATETIME = '2024-01-01'
-	,@FechaFin DATETIME = '2024-12-31'
+	-- Rango de fechas: ultimos 6 meses.
+	-- Si se requiere homologar mas hacia el pasado, modificar estas fechas y volver a ejecutar el script.
+	@FechaInicio DATETIME = DATEADD(MONTH, -6, CAST(GETDATE() AS DATE))
+	,@FechaFin DATETIME = CAST(GETDATE() AS DATE)
 
 -- AgentesCliente.EntityTypeId
 IF OBJECT_ID('tempdb..#AgentesClienteUpdate') IS NOT NULL
@@ -23,7 +24,7 @@ CREATE TABLE #AgentesClienteUpdate (
 	,Nro INT IDENTITY(1, 1)
 	)
 
--- Índice clúster optimizado para el proceso
+-- Indice cluster optimizado para el proceso
 CREATE CLUSTERED INDEX IDX_AgentesCliente ON #AgentesClienteUpdate (id)
 
 INSERT INTO #AgentesClienteUpdate (
@@ -61,7 +62,7 @@ SELECT @TotalRecords = @@ROWCOUNT
 INSERT INTO administracion_db..DBA_LogDepuracion
 SELECT GETDATE()
 	,'AgentesCliente'
-	,'INICIO ACTUALIZACIÓN Rango ' + CONVERT(VARCHAR(10), @FechaInicio, 120) + ' a ' + CONVERT(VARCHAR(10), @FechaFin, 120)
+	,'INICIO ACTUALIZACION Rango ' + CONVERT(VARCHAR(10), @FechaInicio, 120) + ' a ' + CONVERT(VARCHAR(10), @FechaFin, 120)
 	,@TotalRecords
 	,GETDATE()
 
@@ -101,7 +102,7 @@ BEGIN
 
 		SELECT @ErrorCount = @ErrorCount + 1
 
-		-- Intentar de nuevo con lote más pequeño progresivamente
+		-- Intentar de nuevo con lote mas pequeno progresivamente
 		IF @BatchSize > 500
 		BEGIN
 			SELECT @BatchSize = CAST(@BatchSize * 0.8 AS INT)
@@ -110,8 +111,8 @@ BEGIN
 		END
 		ELSE
 		BEGIN
-			-- Si el lote es muy pequeño, saltar este rango
-			PRINT '   -> BatchSize muy pequeño, saltando'
+			-- Si el lote es muy pequeno, saltar este rango
+			PRINT '   -> BatchSize muy pequeno, saltando'
 
 			SELECT @RowStart = @RowEnd + 1
 		END
@@ -122,7 +123,7 @@ IF OBJECT_ID('tempdb..#AgentesClienteUpdate') IS NOT NULL
 	DROP TABLE #AgentesClienteUpdate
 
 IF @ErrorCount = 0
-	PRINT 'Estado: ? COMPLETADO EXITOSAMENTE'
+	PRINT 'Estado: COMPLETADO EXITOSAMENTE'
 ELSE
-	PRINT 'Estado: ? COMPLETADO CON ERRORES'
+	PRINT 'Estado: COMPLETADO CON ERRORES'
 GO

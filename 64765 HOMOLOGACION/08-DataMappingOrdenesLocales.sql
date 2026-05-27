@@ -34,7 +34,7 @@ AND (ol.BilltoConsigneeId IS NULL OR ol.ConsigneeId IS NULL) -- Solo procesar si
 SELECT @TotalRecords = @@ROWCOUNT
 
 INSERT INTO administracion_db..DBA_LogDepuracion
-SELECT GETDATE(),'OrdenesLocales','INICIO ACTUALIZACIÓN',@TotalRecords,GETDATE()
+SELECT GETDATE(),'OrdenesLocales','INICIO ACTUALIZACION',@TotalRecords,GETDATE()
 
 WHILE @RowStart <= @TotalRecords
 BEGIN
@@ -63,7 +63,7 @@ BEGIN
         ROLLBACK TRANSACTION
         SELECT @ErrorCount = @ErrorCount + 1
         
-		-- Intentar de nuevo con lote más pequeño progresivamente
+		-- Intentar de nuevo con lote mas pequeno progresivamente
         IF @BatchSize > 500
         BEGIN
             SELECT @BatchSize = CAST(@BatchSize * 0.8 AS INT)
@@ -71,8 +71,8 @@ BEGIN
         END
         ELSE
         BEGIN
-            -- Si el lote es muy pequeño, saltar este rango
-            PRINT '   -> BatchSize muy pequeño, saltando'
+			-- Si el lote es muy pequeno, saltar este rango
+			PRINT '   -> BatchSize muy pequeno, saltando'
             SELECT @RowStart = @RowEnd + 1
         END
     END CATCH
@@ -81,8 +81,8 @@ END
 IF OBJECT_ID('tempdb..#OrdenesLocalesUpdate') IS NOT NULL DROP TABLE #OrdenesLocalesUpdate
 
 IF @ErrorCount = 0
-    PRINT 'Estado: ✓ COMPLETADO EXITOSAMENTE'
+    PRINT 'Estado: COMPLETADO EXITOSAMENTE'
 ELSE
-    PRINT 'Estado: ⚠ COMPLETADO CON ERRORES'
+    PRINT 'Estado: COMPLETADO CON ERRORES'
 
 GO

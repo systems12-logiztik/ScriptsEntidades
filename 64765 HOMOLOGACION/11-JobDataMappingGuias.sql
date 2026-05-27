@@ -31,7 +31,7 @@ AND g.Status = 'RESERVADO' -- Filtrar solo por estos estatus
 SELECT @TotalRecords = @@ROWCOUNT
 
 INSERT INTO administracion_db..DBA_LogDepuracion
-SELECT GETDATE(),'Guias','INICIO ACTUALIZACIÓN (RESERVADO)',@TotalRecords,GETDATE()
+SELECT GETDATE(),'Guias','INICIO ACTUALIZACION (RESERVADO)',@TotalRecords,GETDATE()
 
 WHILE @RowStart <= @TotalRecords
 BEGIN
@@ -59,7 +59,7 @@ BEGIN
         ROLLBACK TRANSACTION
         SELECT @ErrorCount = @ErrorCount + 1
         
-        -- Intentar de nuevo con lote más pequeño progresivamente
+        -- Intentar de nuevo con lote mas pequeno progresivamente
         IF @BatchSize > 500
         BEGIN
             SELECT @BatchSize = CAST(@BatchSize * 0.8 AS INT)
@@ -67,8 +67,8 @@ BEGIN
         END
         ELSE
         BEGIN
-            -- Si el lote es muy pequeño, saltar este rango
-            PRINT '   -> BatchSize muy pequeño, saltando'
+            -- Si el lote es muy pequeno, saltar este rango
+            PRINT '   -> BatchSize muy pequeno, saltando'
             SELECT @RowStart = @RowEnd + 1
         END
     END CATCH

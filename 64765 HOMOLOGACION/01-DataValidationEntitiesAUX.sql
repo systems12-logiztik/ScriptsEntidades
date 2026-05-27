@@ -76,9 +76,3 @@ SELECT id, SyncAction			FROM PuertosAUX							WHERE SyncAction NOT IN ('I','U')
 GO
 
 
-
-
-SELECT * FROM EntityRelationsAUX WHERE ID IN ('REL0115001','REL0115545')
-SELECT * FROM EntityTypesAUX WHERE ID IN ('ETY019946','ETY0110482')
-
-

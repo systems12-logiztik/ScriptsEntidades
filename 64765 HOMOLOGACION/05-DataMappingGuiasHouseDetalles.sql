@@ -1,7 +1,7 @@
 /*
   VERSION     MODIFIEDBY          MODIFIEDDATE    HU            MODIFICATION
   1           Luchin/Patty/Juan   2025-12-19      64765         DataMapping GuiasHouse
-  2           Jaime Astudillo     2026-05-14      64765         Filter by date range(FechaCambio)
+	2           Jaime Astudillo     2026-05-14      64765         Filter by date range (FechaCreacion)
   */
 DECLARE @BatchSize INT = 10000
 	,@TotalRecords INT = 0
@@ -9,9 +9,10 @@ DECLARE @BatchSize INT = 10000
 	,@RowStart INT = 1
 	,@RowEnd INT = 0
 	,
-	-- Rango de fechas a procesar (ajustar antes de cada ejecuci�n)
-	@FechaInicio DATETIME = '2024-01-01'
-	,@FechaFin DATETIME = '2024-12-31'
+	-- Rango de fechas: ultimos 6 meses.
+	-- Si se requiere homologar mas hacia el pasado, modificar estas fechas y volver a ejecutar el script.
+	@FechaInicio DATETIME = DATEADD(MONTH, -6, CAST(GETDATE() AS DATE))
+	,@FechaFin DATETIME = CAST(GETDATE() AS DATE)
 
 IF OBJECT_ID('tempdb..#GuiasHouseUpdate') IS NOT NULL
 	DROP TABLE #GuiasHouseUpdate
@@ -48,7 +49,7 @@ SELECT @TotalRecords = @@ROWCOUNT
 INSERT INTO administracion_db..DBA_LogDepuracion
 SELECT GETDATE()
 	,'GuiasHouse'
-	,'INICIO ACTUALIZACI�N Rango ' + CONVERT(VARCHAR(10), @FechaInicio, 120) + ' a ' + CONVERT(VARCHAR(10), @FechaFin, 120)
+	,'INICIO ACTUALIZACION Rango ' + CONVERT(VARCHAR(10), @FechaInicio, 120) + ' a ' + CONVERT(VARCHAR(10), @FechaFin, 120)
 	,@TotalRecords
 	,GETDATE()
 
@@ -96,15 +97,18 @@ BEGIN
 		END
 		ELSE
 		BEGIN
-			PRINT '   -> BatchSize muy peque�o, saltando'
+			PRINT '   -> BatchSize muy pequeno, saltando'
 
 			SELECT @RowStart = @RowEnd + 1
 		END
 	END CATCH
 END
 
+IF OBJECT_ID('tempdb..#GuiasHouseUpdate') IS NOT NULL
+	DROP TABLE #GuiasHouseUpdate
+
 IF @ErrorCount = 0
-	PRINT 'Estado: ? COMPLETADO EXITOSAMENTE'
+	PRINT 'Estado: COMPLETADO EXITOSAMENTE'
 ELSE
-	PRINT 'Estado: ? COMPLETADO CON ERRORES'
+	PRINT 'Estado: COMPLETADO CON ERRORES'
 GO
