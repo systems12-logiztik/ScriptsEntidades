@@ -110,7 +110,7 @@ BEGIN
 	SET nombre = VCE.nombre,
 		BillToConsigneeId = VCE.Id
 	FROM #ConsigneesSelected CS
-	INNER JOIN v_ClientsEntities VCE WITH (NOLOCK) ON VCE.Id = CS.id
+	INNER JOIN v_ClientsEntities VCE WITH (NOLOCK) ON VCE.ConsigneeId = CS.id
 
 	INSERT INTO #ParametrosInvoice
 	SELECT valor, referencia, id
@@ -428,9 +428,9 @@ EXEC pro_reportes_analiticacontabilidad
 -- 2. Prueba con multiples consignatarios
 
 EXEC AC_pro_GetAccountingAnalyticsReports 
-	'ETY0000000008683,ETY0000000008142',
-	'2026-01-01', 
-	'2026-01-10'
+	'ETY013489,ETY013490',
+	'2026-03-29', 
+	'2026-03-31'
 	
 EXEC pro_reportes_analiticacontabilidad 
 	'CLI0120245,CLI0119075', 
