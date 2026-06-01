@@ -2,6 +2,7 @@
 VERSION		MODIFIEDBY			MODIFIEDDATE	HU					MODIFICATION
 1			Jorge Ortiz			2025-04-22		55188				Initial Code - Add new ParametersList for all companies
 2			Jorge Ortiz			2025-11-10		LAG-CT-013 53071	Initial Code - Add new ParametersList for all companies
+3			Oscar Yunda			2026-06-01		LAG-CT-036 66043	Initial Code - Add new ParametersList for all TarifaServicioLocal
 */
 IF NOT EXISTS(
     SELECT TOP 1 1
@@ -467,6 +468,94 @@ BEGIN
 		END
 
 		FETCH NEXT FROM EMP_CURSOR INTO @empresaId
+	END
+
+	CLOSE EMP_CURSOR
+	DEALLOCATE EMP_CURSOR
+
+END
+
+BEGIN
+
+	DECLARE @CodigoSL VARCHAR(64),
+			@DescripcionSL VARCHAR(128),
+			@TipoSL VARCHAR(32),
+			@ActorSL VARCHAR(16),
+			@NotaSL VARCHAR(256),
+			@FechaCambioSL DATETIME,
+			@StatusSL VARCHAR(32),
+			@EnumeradorSL VARCHAR(64),
+			@DetailDescriptionSL VARCHAR(8000),
+			@empresaIdSL VARCHAR(16),
+			@idNewSL VARCHAR(16);
+
+	SELECT	@CodigoSL = 'TarifaServicioLocal',
+			@DescripcionSL = 'Permite definir el conjunto de servicios locales que serán ejecutados automáticamente sobre la carga durante su proceso operativo en bodega',
+			@TipoSL = 'FACTURACION',
+			@ActorSL = 'BILLTO',
+			@NotaSL = 'Allows defining the set of local services that will be automatically executed on the cargo during its warehouse operational process. 
+			The selected values correspond to the Local Services catalog and determine which operational processes, calculations, or services must be generated for the received pieces associated with the operation.',
+			@FechaCambioSL = GETDATE(),
+			@StatusSL = 'ACTIVO',
+			@EnumeradorSL = 'TarifaServicioLocal',
+			@DetailDescriptionSL = '{"description":{"es-US":"Servicios Locales","en-US":"Local Services"},"detail":{"es-US":"Permite definir el conjunto de servicios locales que serán ejecutados automáticamente sobre la carga durante su proceso operativo en bodega.<br>Los valores seleccionados corresponden al catálogo de Servicios Locales y determinan qué procesos, cálulos o servicios deberán generarse para las piezas recibidas asociadas a la operación.<br>","en-US":"Allows defining the set of local services that will be automatically executed on the cargo during its warehouse operational process.<br>The selected values correspond to the Local Services catalog and determine which operational processes, calculations, or services must be generated for the received pieces associated with the operation.<br>"}}'
+
+
+	DECLARE EMP_CURSOR CURSOR FOR
+	SELECT E.Id
+	FROM dbo.Empresas E
+	WHERE [status] = 'ACTIVO'
+
+	OPEN EMP_CURSOR
+	FETCH NEXT FROM EMP_CURSOR INTO @empresaIdSL
+
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+
+		IF NOT EXISTS (
+			SELECT 1
+			FROM dbo.ParametrosLista PL
+			WHERE PL.Codigo = @CodigoSL
+			AND PL.IdEmpresa = @empresaIdSL
+		)
+		BEGIN
+			EXEC dbo.PRO_General_GenerarIdUnico 
+				'ParametrosLista',
+				@IdUnico = @idNewSL OUTPUT
+
+			INSERT INTO dbo.ParametrosLista
+			(
+				Id,
+				Codigo,
+				Descripcion,
+				Tipo,
+				Actor,
+				Nota,
+				FechaCambio,
+				[Status],
+				IdEmpresa,
+				TipoActor,
+				Enumerador,
+				DetailDescription
+			)
+			VALUES
+			(
+				@idNewSL,
+				@CodigoSL,
+				@DescripcionSL,
+				@TipoSL,
+				@ActorSL,
+				@NotaSL,
+				@FechaCambioSL,
+				@StatusSL,
+				@empresaIdSL,
+				NULL,
+				@EnumeradorSL,
+				@DetailDescriptionSL
+			)
+		END
+
+		FETCH NEXT FROM EMP_CURSOR INTO @empresaIdSL
 	END
 
 	CLOSE EMP_CURSOR
