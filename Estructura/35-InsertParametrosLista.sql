@@ -1,8 +1,9 @@
 ﻿/* 
 VERSION		MODIFIEDBY			MODIFIEDDATE	HU					MODIFICATION
-1			Jorge Ortiz			2025-04-22		67468				Initial Code - Add new ParametersList for all companies
+1			Jorge Ortiz			2025-04-22		55188				Initial Code - Add new ParametersList for all companies
 2			Jorge Ortiz			2025-11-10		LAG-CT-013 53071	Initial Code - Add new ParametersList for all companies
 3			Oscar Yunda			2026-06-01		LAG-CT-036 66043	Initial Code - Add new ParametersList for all TarifaServicioLocal
+3			Jesús Yandún		2026-06-05		LAG-WM4-000 53098	Initial Code - Add new ParametersList for all FormasFacturarDestiny
 */
 IF NOT EXISTS(
     SELECT TOP 1 1
@@ -11,9 +12,9 @@ IF NOT EXISTS(
         'TipoServicioBrindaCliente', 'NombreExportadorParaManifiestos', 'RepeticionCodigosBarraCliente', 
         'UsarCodigoBarraCliente', 'PermitirCambiosNumeroHouse', 'NivelVisualizacionCoordinaciones','GuardarDimensionesDesdeXMLCliente',
         'EnvioDocumentosArchivosAdjuntos', 'AgrupacionParaFacturarServiciosLocales', 'AgrupacionParaFacturarProcesosConsolidados',
-		'TipoDeManifiesto'
+		'TipoDeManifiesto', 'FormasFacturarDestiny'
     ) 
-    AND pl.tipo IN('DESPACHO', 'CODIGOBARRA', 'COORDINACION', 'INTEGRACION', 'DOCUMENTACION', 'FACTURACION')
+    AND pl.tipo IN('DESPACHO', 'CODIGOBARRA', 'COORDINACION', 'INTEGRACION', 'DOCUMENTACION', 'FACTURACION', 'CONTABILIDAD')
 )
 BEGIN 
     DECLARE @idEmpresa VARCHAR(16);
@@ -40,7 +41,7 @@ BEGIN
 	(
 		@newId,
 		'EnvioDocumentosArchivosAdjuntos',
-		'EnvÃ­o de documentos como archivos adjuntos',
+		'Envío de documentos como archivos adjuntos',
 		'DOCUMENTACION',
 		'BILLTO',
 		'This parameter determines whether the documents sent to the customer will be attached directly to the email or if a link will be provided for the customer to download them.',
@@ -49,7 +50,7 @@ BEGIN
 		NULL,
 		NULL,
 		'SiNoTipo',
-	    '{"description":{"es-US":"EnvÃ­o de documentos como archivos adjuntos","en-US":"Sending documents as attachments"},"detail":{"es-US":"Este parÃ¡metro determina si los documentos enviados al cliente serÃ¡n adjuntados directamente al correo electrÃ³nico o si se enviarÃ¡ un enlace para que el cliente los descargue. Tiene dos opciones:<br><br>SÃ­: Los archivos se enviarÃ¡n como adjuntos al correo electrÃ³nico.<br>No: Los documentos se enviarÃ¡n mediante una URL o enlace que redirige al cliente para que los descargue segÃºn la necesidad.","en-US":"This parameter determines whether the documents sent to the customer will be attached directly to the email or if a link will be provided for the customer to download them. There are two options:<br><br>Yes: The files will be sent as attachments to the email.<br>No: The documents will be sent via a URL or link that redirects the customer to download them as needed."}}'
+	    '{"description":{"es-US":"Envío de documentos como archivos adjuntos","en-US":"Sending documents as attachments"},"detail":{"es-US":"Este parámetro determina si los documentos enviados al cliente serán adjuntados directamente al correo electrónico o si se enviará un enlace para que el cliente los descargue. Tiene dos opciones:<br><br>Sí: Los archivos se enviarán como adjuntos al correo electrónico.<br>No: Los documentos se enviarán mediante una URL o enlace que redirige al cliente para que los descargue según la necesidad.","en-US":"This parameter determines whether the documents sent to the customer will be attached directly to the email or if a link will be provided for the customer to download them. There are two options:<br><br>Yes: The files will be sent as attachments to the email.<br>No: The documents will be sent via a URL or link that redirects the customer to download them as needed."}}'
  	);
 
     DECLARE empresa_cursor CURSOR FOR
@@ -89,7 +90,7 @@ BEGIN
 				@idEmpresa, 
 				NULL, 
 				'TipoServicioBrindaCliente',
-				'{"description":{"es-US":"Tipo de servicio que brinda el cliente","en-US":"Type of service provided by the customer"},"detail":{"es-US":"Este parÃ¡metro determina el tipo de servicio que ofrece el cliente (por ejemplo, si es una comercializadora) y, con base en eso, modifica cÃ³mo se presenta la informaciÃ³n en las etiquetas generadas dentro del mÃ³dulo de coordinaciones. El sistema valida esta configuraciÃ³n jerÃ¡rquicamente. Primero revisa la opciÃ³n escogida en el \"Consignatario\", en caso de estar vacÃ­o, busca la opciÃ³n a nivel del \"Bill-To\".<br><br>El Bill-To se puede definir como \"Comercializadora\", en este caso el sistema hace lo siguiente: En el mÃ³dulo de coordinaciones, en la etiqueta generada, en lugar de imprimir el nombre del \"ship-to\" o destinatario final, imprime el nombre del consignatario.","en-US":"This parameter defines the type of service provided by the customer (for example, if they are a distributor) and, based on that, modifies how information is displayed on the labels generated within the coordination module. The system validates this configuration hierarchically. It first checks the option selected for the Consignee, and if it''s not set, it looks for the setting at the Bill-To level.<br><br>The Bill-To can be defined as a \"Distributor\". In this case, the system behaves as follows: In the coordination module, on the generated label, instead of printing the name of the Ship-To or final recipient, it prints the name of the consignee."}}'
+				'{"description":{"es-US":"Tipo de servicio que brinda el cliente","en-US":"Type of service provided by the customer"},"detail":{"es-US":"Este parámetro determina el tipo de servicio que ofrece el cliente (por ejemplo, si es una comercializadora) y, con base en eso, modifica cómo se presenta la información en las etiquetas generadas dentro del módulo de coordinaciones. El sistema valida esta configuración jerárquicamente. Primero revisa la opción escogida en el \"Consignatario\", en caso de estar vacío, busca la opción a nivel del \"Bill-To\".<br><br>El Bill-To se puede definir como \"Comercializadora\", en este caso el sistema hace lo siguiente: En el módulo de coordinaciones, en la etiqueta generada, en lugar de imprimir el nombre del \"ship-to\" o destinatario final, imprime el nombre del consignatario.","en-US":"This parameter defines the type of service provided by the customer (for example, if they are a distributor) and, based on that, modifies how information is displayed on the labels generated within the coordination module. The system validates this configuration hierarchically. It first checks the option selected for the Consignee, and if it''s not set, it looks for the setting at the Bill-To level.<br><br>The Bill-To can be defined as a \"Distributor\". In this case, the system behaves as follows: In the coordination module, on the generated label, instead of printing the name of the Ship-To or final recipient, it prints the name of the consignee."}}'
 			);
 
 			EXEC dbo.PRO_General_GenerarIdUnico 'ParametrosLista', @IdUnico = @newId OUTPUT;
@@ -121,7 +122,7 @@ BEGIN
 				@idEmpresa, 
 				NULL, 
 				NULL, 
-				'{"description":{"es-US":"Nombre de exportador para manifiestos","en-US":"Exporter name for manifest"},"detail":{"es-US":"Al generar el manifiesto, sÃ­ este parÃ¡metro contiene informaciÃ³n, serÃ¡ el valor que se muestra en el campo \"Supplier\" del manifiesto por Cliente Final. Si el parÃ¡metro es vacÃ­o toma el mismo nombre del campo Exportador.","en-US":"When generating the manifest, if this parameter contains information, it will be the value displayed in the \"Supplier\" field of the manifest for the End Customer. If the parameter is empty, it will take the same name as the Exporter field"}}'
+				'{"description":{"es-US":"Nombre de exportador para manifiestos","en-US":"Exporter name for manifest"},"detail":{"es-US":"Al generar el manifiesto, sí este parámetro contiene información, será el valor que se muestra en el campo \"Supplier\" del manifiesto por Cliente Final. Si el parámetro es vacío toma el mismo nombre del campo Exportador.","en-US":"When generating the manifest, if this parameter contains information, it will be the value displayed in the \"Supplier\" field of the manifest for the End Customer. If the parameter is empty, it will take the same name as the Exporter field"}}'
 			);
 
 			EXEC dbo.PRO_General_GenerarIdUnico 'ParametrosLista', @IdUnico = @newId OUTPUT;
@@ -144,7 +145,7 @@ BEGIN
 			(
 				@newId, 
 				'RepeticionCodigosBarraCliente', 
-				'RepeticiÃ³n de cÃ³digos de barra del cliente', 
+				'Repetición de códigos de barra del cliente', 
 				'CODIGOBARRA', 
 				'BILLTO',
 				'This parameter defines whether the barcodes provided by the client are allowed to be repeated or must be unique within the system', 
@@ -153,7 +154,7 @@ BEGIN
 				@idEmpresa, 
 				NULL, 
 				'SiNoTipo',
-				'{"description":{"es-US":"RepeticiÃ³n de cÃ³digos de barra del cliente","en-US":"Client Barcode Duplication"},"detail":{"es-US":"Este parÃ¡metro define si se permite que los cÃ³digos de barras proporcionados por el cliente puedan repetirse o si deben ser Ãºnicos en el sistema.","en-US":"This parameter defines whether the barcodes provided by the client are allowed to be repeated or must be unique within the system."}}'
+				'{"description":{"es-US":"Repetición de códigos de barra del cliente","en-US":"Client Barcode Duplication"},"detail":{"es-US":"Este parámetro define si se permite que los códigos de barras proporcionados por el cliente puedan repetirse o si deben ser únicos en el sistema.","en-US":"This parameter defines whether the barcodes provided by the client are allowed to be repeated or must be unique within the system."}}'
 			);
 
 			EXEC dbo.PRO_General_GenerarIdUnico 'ParametrosLista', @IdUnico = @newId OUTPUT;
@@ -176,7 +177,7 @@ BEGIN
 			(
 				@newId, 
 				'UsarCodigoBarraCliente', 
-				'Usar solo cÃ³digo de barra del cliente', 
+				'Usar solo código de barra del cliente', 
 				'CODIGOBARRA', 
 				'BILLTO',
 				'This parameter defines whether the system allows the use of barcodes generated by the system, or if only the barcodes generated and provided by the client are permitted.', 
@@ -185,7 +186,7 @@ BEGIN
 				@idEmpresa, 
 				NULL, 
 				'SiNoTipo',
-				'{"description":{"es-US":"Usar solo cÃ³digo de barra del cliente","en-US":"Use only client barcode"},"detail":{"es-US":"Este parÃ¡metro determina en el sistema si se pueden utilizar cÃ³digos de barras generados por el sistema o si Ãºnicamente se permiten aquellos cÃ³digos de barras generados y enviados por el cliente.","en-US":"This parameter defines whether the system allows the use of barcodes generated by the system, or if only the barcodes generated and provided by the client are permitted."}}'
+				'{"description":{"es-US":"Usar solo código de barra del cliente","en-US":"Use only client barcode"},"detail":{"es-US":"Este parámetro determina en el sistema si se pueden utilizar códigos de barras generados por el sistema o si únicamente se permiten aquellos códigos de barras generados y enviados por el cliente.","en-US":"This parameter defines whether the system allows the use of barcodes generated by the system, or if only the barcodes generated and provided by the client are permitted."}}'
 			);
 
 			EXEC dbo.PRO_General_GenerarIdUnico 'ParametrosLista', @IdUnico = @newId OUTPUT;
@@ -208,7 +209,7 @@ BEGIN
 			(
 				@newId, 
 				'PermitirCambiosNumeroHouse', 
-				'Permitir cambios en el nÃºmero de House', 
+				'Permitir cambios en el número de House', 
 				'COORDINACION', 
 				'BILLTO',
 				'This parameter determines whether it is possible to make changes to the House number or if only the number automatically generated by the system should be used', 
@@ -217,7 +218,7 @@ BEGIN
 				@idEmpresa, 
 				NULL, 
 				'SiNoTipo',
-				'{"description":{"es-US":"Permitir cambios en el nÃºmero de House","en-US":"Allow changes to the House number"},"detail":{"es-US":"Este parÃ¡metro determina si es posible realizar cambios en el nÃºmero de la House o si se Ãºnicamente se debe utilizar el nÃºmero generado automÃ¡ticamente por el sistema.","en-US":"This parameter determines whether it is possible to make changes to the House number or if only the number automatically generated by the system should be used."}}'
+				'{"description":{"es-US":"Permitir cambios en el número de House","en-US":"Allow changes to the House number"},"detail":{"es-US":"Este parámetro determina si es posible realizar cambios en el número de la House o si se únicamente se debe utilizar el número generado automáticamente por el sistema.","en-US":"This parameter determines whether it is possible to make changes to the House number or if only the number automatically generated by the system should be used."}}'
 			);
 
 			EXEC dbo.PRO_General_GenerarIdUnico 'ParametrosLista', @IdUnico = @newId OUTPUT;
@@ -240,7 +241,7 @@ BEGIN
 			(
 				@newId, 
 				'NivelVisualizacionCoordinaciones', 
-				'Nivel de visualizaciÃ³n en coordinaciones', 
+				'Nivel de visualización en coordinaciones', 
 				'COORDINACION', 
 				'BILLTO',
 				'This parameter defines whether, when there is a group of suppliers, each supplier can only view their own coordination requests in the menu', 
@@ -249,7 +250,7 @@ BEGIN
 				@idEmpresa, 
 				NULL,
 				'NivelVisualizacionCoordinaciones',
-				'{"description":{"es-US":"Nivel de visualizaciÃ³n en coordinaciones","en-US":"Coordination visibility level"},"detail":{"es-US":"Este parÃ¡metro define si, al tener un grupo de proveedores, cada proveedor puede visualizar Ãºnicamente sus propias coordinaciones en el menÃº o si, por el contrario, puede ver tambiÃ©n las coordinaciones de todos los proveedores pertenecientes al mismo grupo.","en-US":"This parameter defines whether, when there is a group of suppliers, each supplier can only view their own coordination requests in the menu, or if they can also see the coordination requests of all other suppliers within the same group."}}'
+				'{"description":{"es-US":"Nivel de visualización en coordinaciones","en-US":"Coordination visibility level"},"detail":{"es-US":"Este parámetro define si, al tener un grupo de proveedores, cada proveedor puede visualizar únicamente sus propias coordinaciones en el menú o si, por el contrario, puede ver también las coordinaciones de todos los proveedores pertenecientes al mismo grupo.","en-US":"This parameter defines whether, when there is a group of suppliers, each supplier can only view their own coordination requests in the menu, or if they can also see the coordination requests of all other suppliers within the same group."}}'
 			);
 
 			EXEC dbo.PRO_General_GenerarIdUnico 'ParametrosLista', @IdUnico = @newId OUTPUT;
@@ -281,7 +282,7 @@ BEGIN
 				@idEmpresa, 
 				NULL, 
 				'SiNoTipo',
-				'{"description":{"es-US":"Guardar dimensiones desde el XML del cliente","en-US":"Save dimensions from client XML"},"detail":{"es-US":"Cuando se recibe un XML enviado por un cliente para la creaciÃ³n de una solicitud de coordinaciones mediante una orden de compra (PO), este parÃ¡metro determina si se deben guardar o no las dimensiones proporcionadas por cÃ³digo de barra incluidos en dicho XML.","en-US":"When an XML file sent by a client is received for the creation of a coordination request through a purchase order (PO), this parameter determines whether the dimensions provided via barcode included in the XML should be saved or not."}}'
+				'{"description":{"es-US":"Guardar dimensiones desde el XML del cliente","en-US":"Save dimensions from client XML"},"detail":{"es-US":"Cuando se recibe un XML enviado por un cliente para la creación de una solicitud de coordinaciones mediante una orden de compra (PO), este parámetro determina si se deben guardar o no las dimensiones proporcionadas por código de barra incluidos en dicho XML.","en-US":"When an XML file sent by a client is received for the creation of a coordination request through a purchase order (PO), this parameter determines whether the dimensions provided via barcode included in the XML should be saved or not."}}'
 			);
 
 			EXEC dbo.PRO_General_GenerarIdUnico 'ParametrosLista', @IdUnico = @newId OUTPUT;
@@ -304,7 +305,7 @@ BEGIN
 			(
 				@newId, 
 				'AgrupacionParaFacturarServiciosLocales', 
-				'AgrupaciÃ³n para facturar servicios locales', 
+				'Agrupación para facturar servicios locales', 
 				'FACTURACION', 
 				'BILLTO', 
 				'This parameter defines the grouping method for invoicing of local services', 
@@ -313,7 +314,7 @@ BEGIN
 				@idEmpresa, 
 				NULL, 
 				'AgrupacionParaFacturarServiciosLocales', 
-				'{"description":{"es-US":"AgrupaciÃ³n para facturar servicios locales","en-US":"Grouping for billing local services"},"detail":{"es-US":"Este parÃ¡metro define la forma de agrupar una factura de servicios locales. <br><br> El primer criterio de agrupaciÃ³n serÃ¡ el cÃ³digo contable registrado en el catÃ¡logo del Bill-to, como segundo criterio, se puede seleccionar entre las siguientes opciones: <br><br>1. Servicio: La factura se generarÃ¡ segÃºn el tipo de servicio prestado. Por ejemplo, si se incluyen servicios como Inventario, Pallet y Flete, se crearÃ¡ una lÃ­nea en la factura por cada uno de ellos.<br>2. Fecha de ejecuciÃ³n: La factura se generarÃ¡ de acuerdo con la fecha de ejecuciÃ³n del servicio. Por ejemplo, si se realizaron 3 servicios en 3 fechas distintas, se crearÃ¡n 3 lÃ­neas en la factura, una por cada fecha.<br>3. NÃºmero de referencia: La factura se generarÃ¡ en funciÃ³n del nÃºmero de referencia del servicio local. Por ejemplo, si existen 3 referencias distintas, se crearÃ¡n 3 lÃ­neas en la factura, una por cada referencia.","en-US":"This parameter defines the grouping method for invoicing of local services.<br><br>The first grouping criterion is the accounting code registered in the Bill-to catalog. As a second criterion, one of the following options can be selected:<br><br>1. Service: The invoice will be generated based on the type of service provided. For example, if services such as Inventory, Pallet and Freight are included, 3 lines will be created in the invoice, one for each service.<br>2. Execution Date: The invoice will be generated based on the service execution date. For example, if 3 services were performed on 3 different dates, 3 lines will be created in the invoice, one for each date.<br>3. Reference Number: The invoice will be generated based on the local service reference number. For example, if there are 3 different references, 3 lines will be created in the invoice, one for each reference."}}'
+				'{"description":{"es-US":"Agrupación para facturar servicios locales","en-US":"Grouping for billing local services"},"detail":{"es-US":"Este parámetro define la forma de agrupar una factura de servicios locales. <br><br> El primer criterio de agrupación será el código contable registrado en el catálogo del Bill-to, como segundo criterio, se puede seleccionar entre las siguientes opciones: <br><br>1. Servicio: La factura se generará según el tipo de servicio prestado. Por ejemplo, si se incluyen servicios como Inventario, Pallet y Flete, se creará una línea en la factura por cada uno de ellos.<br>2. Fecha de ejecución: La factura se generará de acuerdo con la fecha de ejecución del servicio. Por ejemplo, si se realizaron 3 servicios en 3 fechas distintas, se crearán 3 líneas en la factura, una por cada fecha.<br>3. Número de referencia: La factura se generará en función del número de referencia del servicio local. Por ejemplo, si existen 3 referencias distintas, se crearán 3 líneas en la factura, una por cada referencia.","en-US":"This parameter defines the grouping method for invoicing of local services.<br><br>The first grouping criterion is the accounting code registered in the Bill-to catalog. As a second criterion, one of the following options can be selected:<br><br>1. Service: The invoice will be generated based on the type of service provided. For example, if services such as Inventory, Pallet and Freight are included, 3 lines will be created in the invoice, one for each service.<br>2. Execution Date: The invoice will be generated based on the service execution date. For example, if 3 services were performed on 3 different dates, 3 lines will be created in the invoice, one for each date.<br>3. Reference Number: The invoice will be generated based on the local service reference number. For example, if there are 3 different references, 3 lines will be created in the invoice, one for each reference."}}'
 			);
 
 			EXEC dbo.PRO_General_GenerarIdUnico 'ParametrosLista', @IdUnico = @newId OUTPUT;
@@ -336,7 +337,7 @@ BEGIN
 			(
 				@newId, 
 				'AgrupacionParaFacturarProcesosConsolidados', 
-				'AgrupaciÃ³n para facturar procesos consolidados', 
+				'Agrupación para facturar procesos consolidados', 
 				'FACTURACION', 
 				'BILLTO', 
 				'This parameter defines the grouping method for a booking generated from the origin', 
@@ -345,7 +346,7 @@ BEGIN
 				@idEmpresa, 
 				NULL, 
 				'AgrupacionParaFacturarProcesosConsolidados', 
-				'{"description":{"es-US":"AgrupaciÃ³n para facturar procesos consolidados","en-US":"Grouping for billing consolidated processes"},"detail":{"es-US":"Este parÃ¡metro define la forma de agrupaciÃ³n de un booking generado desde el origen (es decir, un consolidado), para estructurar la informaciÃ³n que se utilizarÃ¡ en la generaciÃ³n del archivo de facturaciÃ³n (formato .CSV), el cual serÃ¡ posteriormente cargado en el sistema contable SAGE para emitir la factura.<br><br>El primer criterio de agrupaciÃ³n serÃ¡ el cÃ³digo contable registrado en el catÃ¡logo del Bill-to, como segundo criterio, se puede seleccionar entre las siguientes opciones:<br><br>1. 1 Factura para Fletes y 1 Factura para Duties: Los Fletes y los Cargos (Duties) se agrupan en nÃºmeros de factura separados: Un nÃºmero de factura para los Fletes y otro nÃºmero de factura para los Cargos:<br>     Por ejemplo: SÃ­ son 3 reservas, se genera 1 nÃºmero de factura para Fletes y 1 nÃºmero de factura para Cargos.<br><br>2. 1 Factura para Fletes y Duties: Los Fletes y los Cargos (Duties) se agrupan en un Ãºnico nÃºmero de factura.<br>     Por ejemplo: SÃ­ son 3 reservas, se genera 1 solo nÃºmero de factura agrupando Fletes y Cargos (Duties).<br><br>3. 1 Factura para Fletes y 1 Factura para Duties por cada reserva: Los Fletes y los Cargos (Duties) se agrupan en nÃºmeros de factura separados, pero organizados por nÃºmero de reserva: Un nÃºmero de factura para los Fletes de cada reserva y otro nÃºmero de factura para los Cargos por cada reserva.<br>   Por ejemplo: SÃ­ son 3 reservas, se generan 3 nÃºmeros de factura para Fletes y 3 nÃºmeros de facturas para Cargos.<br><br>4. 1 Factura para Fletes y Duties por reserva: Los Fletes y los Cargos (Duties) se agrupan en un Ãºnico nÃºmero de factura, por cada nÃºmero de reserva.<br>     Por ejemplo: SÃ­ son 3 reservas, se generan 3 nÃºmeros de factura agrupando Fletes y Cargos (Duties).","en-US":"This parameter defines the grouping method for a booking generated from the origin (i.e., a consolidation), to structure the information used in the creation of the invoicing file (.CSV format), which will later be uploaded to the SAGE accounting system for invoice generation.<br><br>The first grouping criterion is the accounting code registered in the Bill-to catalog. As a second criterion, one of the following options can be selected:<br><br>1. 1 invoice for Freight and 1 invoice for Duties: Freight charges and duties are grouped into separate invoice numbers â€” one invoice for freight and another for duties.<br>Example: If there are 3 bookings, one invoice will be generated for freight and one invoice for duties.<br><br>2. 1 invoice for Freight and Duties: Freight charges and duties are grouped into a single invoice number.Example: If there are 3 bookings, only one invoice number will be generated grouping freight and duties.<br><br>3. 1 invoice for Freight and 1 invoice for Duties per booking: Freight charges and duties are grouped into separate invoice numbers, but organized by booking. That is, one invoice for the freight of each booking and one invoice for the duties of each booking.<br>Example: If there are 3 bookings, 3 freight invoices and 3 duties invoices will be generated.<br><br>4. 1 invoice for Freight and Duties per booking: Freight charges and duties are grouped into a single invoice, but one per booking. Example: If there are 3 bookings, 3 invoices will be generated grouping freight and duties."}}'
+				'{"description":{"es-US":"Agrupación para facturar procesos consolidados","en-US":"Grouping for billing consolidated processes"},"detail":{"es-US":"Este parámetro define la forma de agrupación de un booking generado desde el origen (es decir, un consolidado), para estructurar la información que se utilizará en la generación del archivo de facturación (formato .CSV), el cual será posteriormente cargado en el sistema contable SAGE para emitir la factura.<br><br>El primer criterio de agrupación será el código contable registrado en el catálogo del Bill-to, como segundo criterio, se puede seleccionar entre las siguientes opciones:<br><br>1. 1 Factura para Fletes y 1 Factura para Duties: Los Fletes y los Cargos (Duties) se agrupan en números de factura separados: Un número de factura para los Fletes y otro número de factura para los Cargos:<br>     Por ejemplo: Sí son 3 reservas, se genera 1 número de factura para Fletes y 1 número de factura para Cargos.<br><br>2. 1 Factura para Fletes y Duties: Los Fletes y los Cargos (Duties) se agrupan en un único número de factura.<br>     Por ejemplo: Sí son 3 reservas, se genera 1 solo número de factura agrupando Fletes y Cargos (Duties).<br><br>3. 1 Factura para Fletes y 1 Factura para Duties por cada reserva: Los Fletes y los Cargos (Duties) se agrupan en números de factura separados, pero organizados por número de reserva: Un número de factura para los Fletes de cada reserva y otro número de factura para los Cargos por cada reserva.<br>   Por ejemplo: Sí son 3 reservas, se generan 3 números de factura para Fletes y 3 números de facturas para Cargos.<br><br>4. 1 Factura para Fletes y Duties por reserva: Los Fletes y los Cargos (Duties) se agrupan en un único número de factura, por cada número de reserva.<br>     Por ejemplo: Sí son 3 reservas, se generan 3 números de factura agrupando Fletes y Cargos (Duties).","en-US":"This parameter defines the grouping method for a booking generated from the origin (i.e., a consolidation), to structure the information used in the creation of the invoicing file (.CSV format), which will later be uploaded to the SAGE accounting system for invoice generation.<br><br>The first grouping criterion is the accounting code registered in the Bill-to catalog. As a second criterion, one of the following options can be selected:<br><br>1. 1 invoice for Freight and 1 invoice for Duties: Freight charges and duties are grouped into separate invoice numbers — one invoice for freight and another for duties.<br>Example: If there are 3 bookings, one invoice will be generated for freight and one invoice for duties.<br><br>2. 1 invoice for Freight and Duties: Freight charges and duties are grouped into a single invoice number.Example: If there are 3 bookings, only one invoice number will be generated grouping freight and duties.<br><br>3. 1 invoice for Freight and 1 invoice for Duties per booking: Freight charges and duties are grouped into separate invoice numbers, but organized by booking. That is, one invoice for the freight of each booking and one invoice for the duties of each booking.<br>Example: If there are 3 bookings, 3 freight invoices and 3 duties invoices will be generated.<br><br>4. 1 invoice for Freight and Duties per booking: Freight charges and duties are grouped into a single invoice, but one per booking. Example: If there are 3 bookings, 3 invoices will be generated grouping freight and duties."}}'
 			);
 
 			EXEC dbo.PRO_General_GenerarIdUnico 'ParametrosLista', @IdUnico = @newId OUTPUT;
@@ -377,7 +378,7 @@ BEGIN
 				@idEmpresa, 
 				NULL, 
 				'TipoDeManifiesto', 
-				'{"description":{"es-US":"Tipo de Manifiesto","en-US":"Manifest Type"},"detail":{"es-US":"Este parÃ¡metro permite configurar el tipo de formato que se debe generar para el manifiesto al momento de realizar un despacho. La informaciÃ³n se visualiza por exportador. Las opciones disponibles son:<br>1. Manifiesto Normal: Organiza la informaciÃ³n en orden alfabÃ©tico segÃºn la columna \"Proveedor\".<br>2. Manifiesto por Producto: Incluye una columna adicional con la informaciÃ³n del producto.<br>3. Manifiesto por Truck ID: Genera un documento agrupado por cada identificador de camiÃ³n (Truck ID).<br>4. Manifiesto por NÃºmero de Documento: Genera un documento agrupado por nÃºmero de waybill.<br>5. Manifiesto por PO: Genera un documento agrupado por cada orden de compra (PO).<br>6. Manifiesto por EDI: Formato especÃ­fico para integraciones vÃ­a EDI (Electronic Data Interchange), este manifiesto contiene una columna con nombre del proveedor que viene desde el EDI.<br>7. Manifiesto PYF: (Formato Plantas y Flores) Genera un formato especÃ­fico para el cliente Interaxion.<br>El sistema valida esta configuraciÃ³n jerÃ¡rquicamente. Primero revisa la opciÃ³n escogida en el \"Consignatario\", en caso de estar vacÃ­o, busca la opciÃ³n a nivel del \"Bill-To\".","en-US":"This parameter allows configuring the type of format to be generated for the manifest at the time of dispatch. The information is displayed per exporter. The available options are:<br>1. Normal Manifest: Organizes the information in alphabetical order based on the \"Supplier\" column.<br>2. Manifest by Product: Adds an additional column with product information.<br>3. Manifest by Truck ID: Generates a document grouped by each Truck ID.<br>4. Manifest by Document Number: Generates a document grouped by waybill number.<br>5. Manifest by PO: Generates a document grouped by each Purchase Order (PO).<br>6. Manifest by EDI: Specific format for integrations via EDI (Electronic Data Interchange). This manifest includes a column with the supplier''s name as provided through the EDI.<br>7. PYF Manifest: (Plants and Flowers format) Generates a specific format for the customer Interaxion. The system validates this configuration hierarchically. It first checks the option selected for the Consignee, and if it''s not set, it looks for the setting at the Bill-To level.<br>"}}'
+				'{"description":{"es-US":"Tipo de Manifiesto","en-US":"Manifest Type"},"detail":{"es-US":"Este parámetro permite configurar el tipo de formato que se debe generar para el manifiesto al momento de realizar un despacho. La información se visualiza por exportador. Las opciones disponibles son:<br>1. Manifiesto Normal: Organiza la información en orden alfabético según la columna \"Proveedor\".<br>2. Manifiesto por Producto: Incluye una columna adicional con la información del producto.<br>3. Manifiesto por Truck ID: Genera un documento agrupado por cada identificador de camión (Truck ID).<br>4. Manifiesto por Número de Documento: Genera un documento agrupado por número de waybill.<br>5. Manifiesto por PO: Genera un documento agrupado por cada orden de compra (PO).<br>6. Manifiesto por EDI: Formato específico para integraciones vía EDI (Electronic Data Interchange), este manifiesto contiene una columna con nombre del proveedor que viene desde el EDI.<br>7. Manifiesto PYF: (Formato Plantas y Flores) Genera un formato específico para el cliente Interaxion.<br>El sistema valida esta configuración jerárquicamente. Primero revisa la opción escogida en el \"Consignatario\", en caso de estar vacío, busca la opción a nivel del \"Bill-To\".","en-US":"This parameter allows configuring the type of format to be generated for the manifest at the time of dispatch. The information is displayed per exporter. The available options are:<br>1. Normal Manifest: Organizes the information in alphabetical order based on the \"Supplier\" column.<br>2. Manifest by Product: Adds an additional column with product information.<br>3. Manifest by Truck ID: Generates a document grouped by each Truck ID.<br>4. Manifest by Document Number: Generates a document grouped by waybill number.<br>5. Manifest by PO: Generates a document grouped by each Purchase Order (PO).<br>6. Manifest by EDI: Specific format for integrations via EDI (Electronic Data Interchange). This manifest includes a column with the supplier''s name as provided through the EDI.<br>7. PYF Manifest: (Plants and Flowers format) Generates a specific format for the customer Interaxion. The system validates this configuration hierarchically. It first checks the option selected for the Consignee, and if it''s not set, it looks for the setting at the Bill-To level.<br>"}}'
 			);
 
 			FETCH NEXT FROM empresa_cursor INTO @idEmpresa;
@@ -404,13 +405,13 @@ BEGIN
 			@Descripcion = 'Permite imprimir una etiqueta adicional para el cliente final',
 			@Tipo = 'CODIGOBARRA',
 			@Actor = 'BILLTO',
-			@Nota = 'This parameter allows you to define whether an additional label should be printed for the Ship-to and which Bill-to ï¿½ Consignee relationships it applies to.
+			@Nota = 'This parameter allows you to define whether an additional label should be printed for the Ship-to and which Bill-to � Consignee relationships it applies to.
 					 The configuration is done by selecting the label type and the corresponding relationships.
 					 Configuring all label types is not mandatory.',
 			@FechaCambio = GETDATE(),
 			@Status = 'ACTIVO',
 			@Enumerador = 'ShiptoDetailLabelType',
-			@DetailDescription = '{"description":{"es-US":"Permite imprimir una etiqueta adicional para el cliente final.","en-US":"Allows printing an additional label for the Ship-to."},"detail":{"es-US":"Este parï¿½metro permite imprimir una etiqueta adicional para el Cliente Final (Ship-to) y a quï¿½ relaciones Bill-to ï¿½ Consignee aplica.<br>La configuraciï¿½n se realiza seleccionando el tipo de etiqueta y las relaciones correspondientes.<br>No es obligatorio parametrizar todas las etiquetas.","en-US":"This parameter allows you to define whether an additional label should be printed for the Ship-to and which Bill-to ï¿½ Consignee relationships it applies to.<br>The configuration is done by selecting the label type and the corresponding relationships.<br>Configuring all label types is not mandatory."}}'
+			@DetailDescription = '{"description":{"es-US":"Permite imprimir una etiqueta adicional para el cliente final.","en-US":"Allows printing an additional label for the Ship-to."},"detail":{"es-US":"Este par�metro permite imprimir una etiqueta adicional para el Cliente Final (Ship-to) y a qu� relaciones Bill-to � Consignee aplica.<br>La configuraci�n se realiza seleccionando el tipo de etiqueta y las relaciones correspondientes.<br>No es obligatorio parametrizar todas las etiquetas.","en-US":"This parameter allows you to define whether an additional label should be printed for the Ship-to and which Bill-to � Consignee relationships it applies to.<br>The configuration is done by selecting the label type and the corresponding relationships.<br>Configuring all label types is not mandatory."}}'
 
 
 	DECLARE EMP_CURSOR CURSOR FOR
@@ -490,7 +491,7 @@ BEGIN
 			@idNewSL VARCHAR(16);
 
 	SELECT	@CodigoSL = 'TarifaServicioLocal',
-			@DescripcionSL = 'Permite definir el conjunto de servicios locales que serÃ¡n ejecutados automÃ¡ticamente sobre la carga durante su proceso operativo en bodega',
+			@DescripcionSL = 'Permite definir el conjunto de servicios locales que serán ejecutados automáticamente sobre la carga durante su proceso operativo en bodega',
 			@TipoSL = 'FACTURACION',
 			@ActorSL = 'BILLTO',
 			@NotaSL = 'Allows defining the set of local services that will be automatically executed on the cargo during its warehouse operational process. 
@@ -498,7 +499,7 @@ BEGIN
 			@FechaCambioSL = GETDATE(),
 			@StatusSL = 'ACTIVO',
 			@EnumeradorSL = 'TarifaServicioLocal',
-			@DetailDescriptionSL = '{"description":{"es-US":"Servicios Locales","en-US":"Local Services"},"detail":{"es-US":"Permite definir el conjunto de servicios locales que serÃ¡n ejecutados automÃ¡ticamente sobre la carga durante su proceso operativo en bodega.<br>Los valores seleccionados corresponden al catÃ¡logo de Servicios Locales y determinan quÃ© procesos, cÃ¡lulos o servicios deberÃ¡n generarse para las piezas recibidas asociadas a la operaciÃ³n.<br>","en-US":"Allows defining the set of local services that will be automatically executed on the cargo during its warehouse operational process.<br>The selected values correspond to the Local Services catalog and determine which operational processes, calculations, or services must be generated for the received pieces associated with the operation.<br>"}}'
+			@DetailDescriptionSL = '{"description":{"es-US":"Servicios Locales","en-US":"Local Services"},"detail":{"es-US":"Permite definir el conjunto de servicios locales que serán ejecutados automáticamente sobre la carga durante su proceso operativo en bodega.<br>Los valores seleccionados corresponden al catálogo de Servicios Locales y determinan qué procesos, cálulos o servicios deberán generarse para las piezas recibidas asociadas a la operación.<br>","en-US":"Allows defining the set of local services that will be automatically executed on the cargo during its warehouse operational process.<br>The selected values correspond to the Local Services catalog and determine which operational processes, calculations, or services must be generated for the received pieces associated with the operation.<br>"}}'
 
 
 	DECLARE EMP_CURSOR CURSOR FOR
@@ -563,3 +564,89 @@ BEGIN
 
 END
 
+BEGIN
+
+	DECLARE @CodigoFD VARCHAR(64),
+			@DescripcionFD VARCHAR(128),
+			@TipoFD VARCHAR(32),
+			@ActorFD VARCHAR(16),
+			@NotaFD VARCHAR(256),
+			@FechaCambioFD DATETIME,
+			@StatusFD VARCHAR(32),
+			@EnumeradorFD VARCHAR(64),
+			@DetailDescriptionFD VARCHAR(8000),
+			@empresaIdFD VARCHAR(16),
+			@idNewFD VARCHAR(16);
+
+	SELECT	@CodigoFD = 'FormasFacturarDestiny',
+			@DescripcionFD = 'Seleccionar la forma de facturar para Destiny para el archivo CSV',
+			@TipoFD = 'FACTURACION',
+			@ActorFD = 'CONSIGNEE',
+			@NotaFD = 'This parameter allows you to define what type of billing document you need to group.',
+			@FechaCambioFD = GETDATE(),
+			@StatusFD = 'ACTIVO',
+			@EnumeradorFD = 'FormasFacturarDestiny',
+			@DetailDescriptionFD = '{"description":{"es-US":"Seleccione la forma de facturar para Destiny para el archivo CSV","en-US":"Select the billing method for Destiny for the CSV file"},"detail":{"es-US":"Este parámetro permite configurar el tipo de agrupamiento para destiny en el archivo csv. La información se visualiza por cliente. Las opciones disponibles son:<br>AGRUPAR_1_FACTURA_FLETE_DUTIES: Debe generarse un archivo por código contable cliente, que va a incluir un numero de factura y varios clientes de distribucion.<br>AGRUPAR_1_FACTURA_FLETE_1_FACTURA_DUTIES: Debe generarse un archivo por código contable cliente, que va a incluir dos numeros de factura y varios clientes de distribucion.<br>GUIA_AGRUPAR_1_FACTURA_FLETE_DUTIES: Debe generarse un archivo por cada guía de distribución, que va a incluir un numero de factura y un cliente de distribución.<br>GUIA_1_FACTURA_FLETE_1_FACTURA_DUTIES: Debe generarse un archivo por cada guía de distribución, que va a incluir dos números de factura y un cliente de distribucion.<br>","en-US":"This parameter allows you to configure the grouping type for Destiny in the CSV file. The information is displayed per customer. The available options are:<br>AGRUPAR_1_FACTURA_FLETE_DUTIES: One file should be generated per customer accounting code, which will include one invoice number and several distribution customers.<br>AGRUPAR_1_FACTURA_FLETE_1_FACTURA_DUTIES: One file should be generated per customer accounting code, which will include two invoice numbers and several distribution customers.<br>GUIA_AGRUPAR_1_FACTURA_FLETE_DUTIES: One file should be generated for each distribution guide, which will include one invoice number and one distribution customer.<br>GUIA_1_FACTURA_FLETE_1_FACTURA_DUTIES: One file should be generated for each distribution guide, which will include two invoice numbers and one distribution customer.<br>"}}'
+
+	DECLARE EMP_CURSOR CURSOR FOR
+	SELECT E.Id
+	FROM dbo.Empresas E
+	WHERE [status] = 'ACTIVO'
+
+	OPEN EMP_CURSOR
+	FETCH NEXT FROM EMP_CURSOR INTO @empresaIdFD
+
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		IF NOT EXISTS (
+			SELECT 1
+			FROM dbo.ParametrosLista PL
+			WHERE PL.Codigo = @CodigoFD
+			AND PL.IdEmpresa = @empresaIdFD
+			AND PL.actor = 'CONSIGNEE'
+		)
+		BEGIN
+			PRINT 'EMP ' + @empresaIdFD
+			EXEC dbo.PRO_General_GenerarIdUnico 
+				'ParametrosLista',
+				@IdUnico = @idNewFD OUTPUT
+
+			INSERT INTO dbo.ParametrosLista
+			(
+				Id,
+				Codigo,
+				Descripcion,
+				Tipo,
+				Actor,
+				Nota,
+				FechaCambio,
+				[Status],
+				IdEmpresa,
+				TipoActor,
+				Enumerador,
+				DetailDescription
+			)
+			VALUES
+			(
+				@idNewFD,
+				@CodigoFD,
+				@DescripcionFD,
+				@TipoFD,
+				@ActorFD,
+				@NotaFD,
+				@FechaCambioFD,
+				@StatusFD,
+				@empresaIdFD,
+				NULL,
+				@EnumeradorFD,
+				@DetailDescriptionFD
+			)
+		END
+
+		FETCH NEXT FROM EMP_CURSOR INTO @empresaIdFD
+	END
+
+	CLOSE EMP_CURSOR
+	DEALLOCATE EMP_CURSOR
+
+END
