@@ -5,7 +5,7 @@ VERSION     MODIFIEDBY					MODIFIEDDATE    HU          MODIFICATION
 
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('PoDetalles') AND name = 'ShipToId')
 BEGIN
-    ALTER TABLE PoDetalles ADD ShipToId VARCHAR(16) NULL;
+    ALTER TABLE [dbo].PoDetalles ADD ShipToId VARCHAR(16) NULL;
     PRINT 'Columna ShipToId agregada a PoDetalles';
 END
 ELSE

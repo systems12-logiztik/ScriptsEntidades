@@ -4,8 +4,8 @@ VERSION		MODIFIEDBY			MODIFIEDDATE	HU		MODIFICATION
 */
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('AsignacionServiciosLocales') AND name = 'ConsigneeId')
 BEGIN
-    ALTER TABLE AsignacionServiciosLocales ADD ConsigneeId VARCHAR(16) NULL, 
-                BillToConsigneeId VARCHAR(16) NULL;
+    ALTER TABLE [dbo].AsignacionServiciosLocales ADD ConsigneeId VARCHAR(16) NULL, 
+													BillToConsigneeId VARCHAR(16) NULL;
     PRINT 'Columna ConsigneeId y BillToConsigneeId agregada a AsignacionServiciosLocales';
 END
 ELSE

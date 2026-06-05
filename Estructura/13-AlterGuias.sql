@@ -5,7 +5,7 @@ VERSION     MODIFIEDBY					MODIFIEDDATE    HU          MODIFICATION
 
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Guias') AND name = 'BillToConsigneeId')
 BEGIN
-    ALTER TABLE Guias ADD BillToConsigneeId VARCHAR(16) NULL;
+    ALTER TABLE [dbo].Guias ADD BillToConsigneeId VARCHAR(16) NULL;
     PRINT 'Columna BillToConsigneeId agregada a Guias';
 END
 ELSE
