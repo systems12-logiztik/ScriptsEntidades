@@ -1,4 +1,4 @@
-$path = "C:\Users\lcampos\OneDrive - ALIANZA LOGISTIKA TDGE S.A\Scripts Entidades\BDD ENTIDADES\Estructura"
+$path = "E:\Alliance\ScriptsEntidades\Estructura"
 
 $files = Get-ChildItem $path -Filter *.sql | ForEach-Object {
 
@@ -19,11 +19,20 @@ $files = Get-ChildItem $path -Filter *.sql | ForEach-Object {
     elseif ($name -match "-CREATEINDEXES_(?i)") { 
         $tipo = 5; $tipoNombre="CREATEINDEXES" 
     }
+    elseif ($name -match "(?i)INSERTPARAMETROS") { 
+        $tipo = 6; $tipoNombre="INSERTPARAMETROS" 
+    }
+    elseif ($name -match "(?i)INSERTCONTADORES") { 
+        $tipo = 7; $tipoNombre="INSERTCONTADORES" 
+    }
+    elseif ($name -match "(?i)INSERTMENU") { 
+        $tipo = 8; $tipoNombre="INSERTMENU" 
+    }
     elseif ($name -match "(?i)INSERT") { 
-        $tipo = 6; $tipoNombre="INSERT" 
+        $tipo = 9; $tipoNombre="INSERT" 
     }
     else { 
-        $tipo = 7; $tipoNombre="OTRO" 
+        $tipo = 10; $tipoNombre="OTRO" 
     }
 
     [PSCustomObject]@{

@@ -44,7 +44,7 @@ BEGIN
     VALUES
     (
         NULL,
-        'CÃ‰DULA DE CIUDADANIA',
+        'CEDULA DE CIUDADANIA',
         'IDENTIFICATION CARD',
         'Identifications',
         'ENUMERACION',
@@ -132,7 +132,7 @@ BEGIN
     VALUES
     (
         NULL,
-        'NÃšMERO DE IDENTIFICACIÃ“N FISCAL',
+        'NUMERO DE IDENTIFICACION FISCAL',
         'FISCAL IDENTIFICATION NUMBER',
         'Identifications',
         'ENUMERACION',
@@ -278,8 +278,8 @@ BEGIN
     VALUES 
     (
         NULL,
-        'Correo electrÃ³nico*',
-        'Email*',
+        'CORREO ELECTRONICO*',
+        'EMAIL*',
         'ConsigneeAttributes',
         'ENUMERACION',
         'Email principal del Consignee.',
@@ -322,11 +322,11 @@ BEGIN
     VALUES 
     (
         NULL,
-        'TelÃ©fono*',
-        'Phone*',
+        'TELEFONO*',
+        'PHONE*',
         'ConsigneeAttributes',
         'ENUMERACION',
-        'TelÃ©fono principal del Consignee.',
+        'Telefono principal del Consignee.',
         'ACTIVO',
         NULL,
         GETDATE(),

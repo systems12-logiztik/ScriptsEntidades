@@ -25,7 +25,8 @@ BEGIN
                         REPLACE(T.Descripcion, '[COSTUMER]', '[CONSIGNEE]'),
                         'Customer', 'Consignee'
                       ),
-        FechaCambio = GETDATE()
+        FechaCambio = GETDATE(),
+		idUsuarioLog='qVYus9gi'
     FROM [dbo].[OpcionesRetraso] T
     WHERE T.Id = 'ORT0140';
 
@@ -35,5 +36,3 @@ ELSE
 BEGIN
     PRINT 'No update required: [COSTUMER]/Customer not found for ORT0140.'
 END
-
-
