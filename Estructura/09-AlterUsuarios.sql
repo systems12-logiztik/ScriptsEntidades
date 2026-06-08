@@ -12,13 +12,12 @@ IF NOT EXISTS (
 )
 BEGIN
     ALTER TABLE [dbo].[Usuarios]
-    ADD [EntityTypeId] VARCHAR(16) NULL,
-        [EntityType] INT NULL;
+    ADD [EntityTypeId] VARCHAR(16) NULL
 
-    PRINT 'Columns EntityTypeId and EntityType added to Usuarios table successfully.'
+    PRINT 'Columns EntityTypeId added to Usuarios table successfully.'
 END
 ELSE
 BEGIN
-    PRINT 'Columns EntityTypeId and EntityType already exist in Usuarios table.'
+    PRINT 'Columns EntityTypeId already exist in Usuarios table.'
 END
 
