@@ -1,4 +1,4 @@
-$path = "E:\Alliance\ScriptsEntidades\Estructura"
+$path = "C:\Users\ccuichan\OneDrive - ALIANZA LOGISTIKA TDGE S.A\Archivos de Luis Campos _ Logiztik Alliance - 55188\Scripts Estructura\Estructura"
 
 $files = Get-ChildItem $path -Filter *.sql | ForEach-Object {
 

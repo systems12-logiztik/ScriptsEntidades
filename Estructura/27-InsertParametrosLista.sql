@@ -3,15 +3,16 @@ VERSION		MODIFIEDBY			MODIFIEDDATE	HU					MODIFICATION
 1			Jorge Ortiz			2025-04-22		55188				Initial Code - Add new ParametersList for all companies
 2			Jorge Ortiz			2025-11-10		LAG-CT-013 53071	Initial Code - Add new ParametersList for all companies
 3			Oscar Yunda			2026-06-01		LAG-CT-036 66043	Initial Code - Add new ParametersList for all TarifaServicioLocal
+3			Oscar Yunda			2026-06-08		LAG-WM4-000 57742	Parameter Correction TipoManifiestoDespacho y NombreExportadorManfiestoDespacho
 */
 IF NOT EXISTS(
     SELECT TOP 1 1
     FROM ParametrosLista pl
     WHERE pl.codigo IN (
-        'TipoServicioBrindaCliente', 'NombreExportadorParaManifiestos', 'RepeticionCodigosBarraCliente', 
+        'TipoServicioBrindaCliente', 'NombreExportadorManfiestoDespacho', 'RepeticionCodigosBarraCliente', 
         'UsarCodigoBarraCliente', 'PermitirCambiosNumeroHouse', 'NivelVisualizacionCoordinaciones','GuardarDimensionesDesdeXMLCliente',
         'EnvioDocumentosArchivosAdjuntos', 'AgrupacionParaFacturarServiciosLocales', 'AgrupacionParaFacturarProcesosConsolidados',
-		'TipoDeManifiesto'
+		'TipoManifiestoDespacho'
     ) 
     AND pl.tipo IN('DESPACHO', 'CODIGOBARRA', 'COORDINACION', 'INTEGRACION', 'DOCUMENTACION', 'FACTURACION')
 )
@@ -111,7 +112,7 @@ BEGIN
 			VALUES
 			(
 				@newId, 
-				'NombreExportadorParaManifiestos', 
+				'NombreExportadorManfiestoDespacho', 
 				'Nombre de exportador para manifiestos', 
 				'DESPACHO', 
 				'BILLTO', 
@@ -367,7 +368,7 @@ BEGIN
 			VALUES
 			(
 				@newId, 
-				'TipoDeManifiesto', 
+				'TipoManifiestoDespacho', 
 				'Tipo de Manifiesto', 
 				'DESPACHO', 
 				'BILLTO',
@@ -376,7 +377,7 @@ BEGIN
 				'ACTIVO', 
 				@idEmpresa, 
 				NULL, 
-				'TipoDeManifiesto', 
+				'TipoManifiestoDespacho', 
 				'{"description":{"es-US":"Tipo de Manifiesto","en-US":"Manifest Type"},"detail":{"es-US":"Este parámetro permite configurar el tipo de formato que se debe generar para el manifiesto al momento de realizar un despacho. La información se visualiza por exportador. Las opciones disponibles son:<br>1. Manifiesto Normal: Organiza la información en orden alfabético según la columna \"Proveedor\".<br>2. Manifiesto por Producto: Incluye una columna adicional con la información del producto.<br>3. Manifiesto por Truck ID: Genera un documento agrupado por cada identificador de camión (Truck ID).<br>4. Manifiesto por Número de Documento: Genera un documento agrupado por número de waybill.<br>5. Manifiesto por PO: Genera un documento agrupado por cada orden de compra (PO).<br>6. Manifiesto por EDI: Formato específico para integraciones vía EDI (Electronic Data Interchange), este manifiesto contiene una columna con nombre del proveedor que viene desde el EDI.<br>7. Manifiesto PYF: (Formato Plantas y Flores) Genera un formato específico para el cliente Interaxion.<br>El sistema valida esta configuración jerárquicamente. Primero revisa la opción escogida en el \"Consignatario\", en caso de estar vacío, busca la opción a nivel del \"Bill-To\".","en-US":"This parameter allows configuring the type of format to be generated for the manifest at the time of dispatch. The information is displayed per exporter. The available options are:<br>1. Normal Manifest: Organizes the information in alphabetical order based on the \"Supplier\" column.<br>2. Manifest by Product: Adds an additional column with product information.<br>3. Manifest by Truck ID: Generates a document grouped by each Truck ID.<br>4. Manifest by Document Number: Generates a document grouped by waybill number.<br>5. Manifest by PO: Generates a document grouped by each Purchase Order (PO).<br>6. Manifest by EDI: Specific format for integrations via EDI (Electronic Data Interchange). This manifest includes a column with the supplier''s name as provided through the EDI.<br>7. PYF Manifest: (Plants and Flowers format) Generates a specific format for the customer Interaxion. The system validates this configuration hierarchically. It first checks the option selected for the Consignee, and if it''s not set, it looks for the setting at the Bill-To level.<br>"}}'
 			);
 
